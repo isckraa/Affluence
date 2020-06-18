@@ -58,9 +58,15 @@ class User implements UserInterface
      */
     private $boutique;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Recompense::class, mappedBy="user")
+     */
+    private $recompenses;
+
     public function __construct()
     {
         $this->infoFileAttentes = new ArrayCollection();
+        $this->recompenses = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -209,6 +215,37 @@ class User implements UserInterface
         $newUser = null === $boutique ? null : $this;
         if ($boutique->getUser() !== $newUser) {
             $boutique->setUser($newUser);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Recompense[]
+     */
+    public function getRecompenses(): Collection
+    {
+        return $this->recompenses;
+    }
+
+    public function addRecompense(Recompense $recompense): self
+    {
+        if (!$this->recompenses->contains($recompense)) {
+            $this->recompenses[] = $recompense;
+            $recompense->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRecompense(Recompense $recompense): self
+    {
+        if ($this->recompenses->contains($recompense)) {
+            $this->recompenses->removeElement($recompense);
+            // set the owning side to null (unless already changed)
+            if ($recompense->getUser() === $this) {
+                $recompense->setUser(null);
+            }
         }
 
         return $this;
