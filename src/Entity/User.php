@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -45,6 +47,21 @@ class User implements UserInterface
      * @ORM\Column(type="integer", nullable=true)
      */
     private $points;
+
+    /**
+     * @ORM\OneToMany(targetEntity=InfoFileAttente::class, mappedBy="user")
+     */
+    private $infoFileAttentes;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Boutique::class, mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $boutique;
+
+    public function __construct()
+    {
+        $this->infoFileAttentes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -144,6 +161,55 @@ class User implements UserInterface
     public function setPoints(?int $points): self
     {
         $this->points = $points;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|InfoFileAttente[]
+     */
+    public function getInfoFileAttentes(): Collection
+    {
+        return $this->infoFileAttentes;
+    }
+
+    public function addInfoFileAttente(InfoFileAttente $infoFileAttente): self
+    {
+        if (!$this->infoFileAttentes->contains($infoFileAttente)) {
+            $this->infoFileAttentes[] = $infoFileAttente;
+            $infoFileAttente->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInfoFileAttente(InfoFileAttente $infoFileAttente): self
+    {
+        if ($this->infoFileAttentes->contains($infoFileAttente)) {
+            $this->infoFileAttentes->removeElement($infoFileAttente);
+            // set the owning side to null (unless already changed)
+            if ($infoFileAttente->getUser() === $this) {
+                $infoFileAttente->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getBoutique(): ?Boutique
+    {
+        return $this->boutique;
+    }
+
+    public function setBoutique(?Boutique $boutique): self
+    {
+        $this->boutique = $boutique;
+
+        // set (or unset) the owning side of the relation if necessary
+        $newUser = null === $boutique ? null : $this;
+        if ($boutique->getUser() !== $newUser) {
+            $boutique->setUser($newUser);
+        }
 
         return $this;
     }
