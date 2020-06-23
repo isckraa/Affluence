@@ -146,6 +146,8 @@ class BoutiqueController extends AbstractController
     /**
      * @param BoutiqueRepository $boutiqueRepository
      * @param SerializerInterface $serializer
+     * @param Request $request
+     * @param ValidatorInterface $validator
      * @Route("/boutique/list/code_postal", name="boutique_list_code_postal", methods={"GET", "POST"})
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
@@ -164,5 +166,48 @@ class BoutiqueController extends AbstractController
                 'message' => $e->getMessage()
             ], 400);
         }
+    }
+
+    /**
+     * @param Request $request
+     * @param SerializerInterface $serializer
+     * @param ValidatorInterface $validator
+     * @param BoutiqueRepository $boutiqueRepository
+     * @param EntityManagerInterface $em
+     * @Route("/boutique/update", name="boutique_update", methods={"PUT", "PATCH"})
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function update(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, BoutiqueRepository $boutiqueRepository, EntityManagerInterface $em){
+        $jsonRequest = $request->getContent();
+        $id = $request->query->get('id');
+        try {
+            $newData = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
+            $errors = $validator->validate($newData);
+            if( count($errors) > 0) {
+                return $this->json($errors, 400);
+            }
+        } catch (NotEncodableValueException $e) {
+            return $this->json([
+                'status' => 400,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+        $boutique = $boutiqueRepository->findOneBy(['id' => $id]);
+        if($boutique){
+            $boutique->setAdresse($newData->getAdresse());
+            $boutique->setCodePostal($newData->getCodePostal());
+            $boutique->setNom($newData->getNom());
+            $boutique->setUser($newData->getUser());
+            $em->persist($boutique);
+            $em->flush();
+            return $this->json([
+                'status' => 201,
+                'message' => 'Update store success'
+            ], 201);
+        }
+        return $this->json([
+            'status' => 400,
+            'message' => 'Bad id'
+        ], 400);
     }
 }
