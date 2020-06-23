@@ -48,6 +48,39 @@ class BoutiqueController extends AbstractController
     }
 
     /**
+     * @param BoutiqueRepository $boutiqueRepository
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @param ValidatorInterface $validator
+     * @Route("/boutique/delete", name="boutique_delete", methods={"DELETE"})
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function delete(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer, Request $request, ValidatorInterface $validator) {
+        $requestContent = $request->getContent();
+        $id = (int)$requestContent;
+        if ($id > 0) {
+            $boutique = $boutiqueRepository->findOneBy(["id" => $id]);
+            if ($boutique) {
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->remove($boutique);
+                $entityManager->flush();
+                return $this->json([
+                    'status' => 201,
+                    'message' => "Delete store success"
+                ], 201);
+            }
+            return $this->json([
+                'status' => 400,
+                'message' => "Bad id"
+            ], 400);
+        }
+        return $this->json([
+            'status' => 400,
+            'message' => "Not good integer"
+        ], 400);
+    }
+
+    /**
      * @Route("/boutique/list", name="boutique_list", methods={"GET"})
      */
     public function list(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer)
