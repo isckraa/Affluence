@@ -6,6 +6,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "jms/serializer-bundle": "^3.6",
+        "lexik/jwt-authentication-bundle": "^2.8",
         "sensio/framework-extra-bundle": "^5.1",
         "symfony/apache-pack": "^1.0",
         "symfony/asset": "5.1.*",
