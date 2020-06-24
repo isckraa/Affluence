@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}FileAttente index{% endblock %}
+
+{% block body %}
+    <h1>FileAttente index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Type</th>
+                <th>Duree</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for file_attente in file_attentes %}
+            <tr>
+                <td>{{ file_attente.id }}</td>
+                <td>{{ file_attente.type }}</td>
+                <td>{{ file_attente.duree ? file_attente.duree|date('H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('file_attente_show', {'id': file_attente.id}) }}">show</a>
+                    <a href="{{ path('file_attente_edit', {'id': file_attente.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('file_attente_new') }}">Create new</a>
+{% endblock %}

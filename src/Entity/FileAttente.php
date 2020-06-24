@@ -33,8 +33,8 @@ class FileAttente
     private $infoFileAttente;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Boutique::class, inversedBy="fileAttente")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity=Boutique::class, inversedBy="fileAttente",cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false, name="boutique_id", referencedColumnName="id")
      */
     private $boutique;
 

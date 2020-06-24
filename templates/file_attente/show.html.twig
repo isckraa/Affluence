@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}FileAttente{% endblock %}
+
+{% block body %}
+    <h1>FileAttente</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ file_attente.id }}</td>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>{{ file_attente.type }}</td>
+            </tr>
+            <tr>
+                <th>Duree</th>
+                <td>{{ file_attente.duree ? file_attente.duree|date('H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('file_attente_index') }}">back to list</a>
+
+    <a href="{{ path('file_attente_edit', {'id': file_attente.id}) }}">edit</a>
+
+    {{ include('file_attente/_delete_form.html.twig') }}
+{% endblock %}
