@@ -49,6 +49,16 @@ class Boutique
      */
     private $ville;
 
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $Longitude;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $Latitude;
+
     public function __construct()
     {
         $this->fileAttente = new ArrayCollection();
@@ -146,6 +156,30 @@ class Boutique
     public function setVille(string $ville): self
     {
         $this->ville = $ville;
+
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->Longitude;
+    }
+
+    public function setLongitude(?float $Longitude): self
+    {
+        $this->Longitude = $Longitude;
+
+        return $this;
+    }
+
+    public function getLatitude(): ?float
+    {
+        return $this->Latitude;
+    }
+
+    public function setLatitude(?float $Latitude): self
+    {
+        $this->Latitude = $Latitude;
 
         return $this;
     }

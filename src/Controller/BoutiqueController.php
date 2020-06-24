@@ -189,6 +189,8 @@ class BoutiqueController extends AbstractController
                 $boutique->setNom($newData->getNom());
                 $boutique->setUser($newData->getUser());
                 $boutique->setVille($newData->getVille());
+                $boutique->setLongitude($newData->getLongitude());
+                $boutique->setLatitude($newData->getLatitude());
                 $em->persist($boutique);
                 $em->flush();
                 return $this->json([
