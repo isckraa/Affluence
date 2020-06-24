@@ -48,36 +48,25 @@ class BoutiqueController extends AbstractController
     }
 
     /**
-     * @param BoutiqueRepository $boutiqueRepository
-     * @param SerializerInterface $serializer
-     * @param Request $request
-     * @param ValidatorInterface $validator
-     * @Route("/boutique/delete", name="boutique_delete", methods={"DELETE"})
+     * @param BoutiqueRepository $boutique
+     * @Route("/boutique/delete/{id}", name="boutique_delete", methods={"DELETE"})
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function delete(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer, Request $request, ValidatorInterface $validator) {
-        $requestContent = $request->getContent();
-        $id = (int)$requestContent;
-        if ($id > 0) {
-            $boutique = $boutiqueRepository->findOneBy(["id" => $id]);
-            if ($boutique) {
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->remove($boutique);
-                $entityManager->flush();
-                return $this->json([
-                    'status' => 201,
-                    'message' => "Delete store success"
-                ], 201);
-            }
+    public function delete(Boutique $boutique) {
+        try {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->remove($boutique);
+            $entityManager->flush();
+            return $this->json([
+                'status' => 201,
+                'message' => "Delete store success"
+            ], 201);
+        } catch (\Exception $e) {
             return $this->json([
                 'status' => 400,
-                'message' => "Bad id"
+                'message' => "Delete store failed. Error : ".$e->getMessage()
             ], 400);
         }
-        return $this->json([
-            'status' => 400,
-            'message' => "Not good integer"
-        ], 400);
     }
 
     /**
@@ -89,35 +78,12 @@ class BoutiqueController extends AbstractController
     }
 
     /**
-     * @param BoutiqueRepository $boutiqueRepository
-     * @param SerializerInterface $serializer
-     * @Route("/boutique/list/id", name="boutique_list_id", methods={"GET"})
+     * @param Boutique $boutique
+     * @Route("/boutique/list/{id}", name="boutique_list_id", methods={"GET"})
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function findById(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer, Request $request, ValidatorInterface $validator) {
-        $requestContent = $request->getContent();
-        /* try {
-            // $boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
-            var_dump($boutique);
-            $errors = $validator->validate($boutique);
-            if(count($errors) > 0) {
-                return $this->json($errors, 400);
-            }
-            return $this->json($boutiqueRepository->findOneBy(["id" => $boutique->getId()]), 200, []);
-        } catch (NotEncodableValueException $e) {
-            return $this->json([
-                'status' => 400,
-                'message' => $e->getMessage()
-            ], 400);
-        } */
-        $id = (int)$requestContent;
-        if ($id > 0) {
-            return $this->json($boutiqueRepository->findOneBy(["id" => $id]), 200, []);
-        }
-        return $this->json([
-            'status' => 400,
-            'message' => "Not good integer"
-        ], 400);
+    public function findById(Boutique $boutique) {
+        return $this->json($boutique, 200, []);
     }
 
     /**
@@ -197,14 +163,13 @@ class BoutiqueController extends AbstractController
      * @param Request $request
      * @param SerializerInterface $serializer
      * @param ValidatorInterface $validator
-     * @param BoutiqueRepository $boutiqueRepository
+     * @param Boutique $boutique
      * @param EntityManagerInterface $em
-     * @Route("/boutique/update", name="boutique_update", methods={"PUT", "PATCH"})
+     * @Route("/boutique/update/{id}", name="boutique_update", methods={"PUT", "PATCH"})
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function update(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, BoutiqueRepository $boutiqueRepository, EntityManagerInterface $em){
+    public function update(Boutique $boutique, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em){
         $jsonRequest = $request->getContent();
-        $id = $request->query->get('id');
         try {
             $newData = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
             $errors = $validator->validate($newData);
@@ -217,18 +182,24 @@ class BoutiqueController extends AbstractController
                 'message' => $e->getMessage()
             ], 400);
         }
-        $boutique = $boutiqueRepository->findOneBy(['id' => $id]);
         if($boutique){
-            $boutique->setAdresse($newData->getAdresse());
-            $boutique->setCodePostal($newData->getCodePostal());
-            $boutique->setNom($newData->getNom());
-            $boutique->setUser($newData->getUser());
-            $em->persist($boutique);
-            $em->flush();
-            return $this->json([
-                'status' => 201,
-                'message' => 'Update store success'
-            ], 201);
+            try {
+                $boutique->setAdresse($newData->getAdresse());
+                $boutique->setCodePostal($newData->getCodePostal());
+                $boutique->setNom($newData->getNom());
+                $boutique->setUser($newData->getUser());
+                $em->persist($boutique);
+                $em->flush();
+                return $this->json([
+                    'status' => 201,
+                    'message' => 'Update store success'
+                ], 201);
+            } catch (\Exception $e){
+                return $this->json([
+                    'status' => 201,
+                    'message' => 'Update store failed. Error : '.$e->getMessage()
+                ], 201);
+            }
         }
         return $this->json([
             'status' => 400,
