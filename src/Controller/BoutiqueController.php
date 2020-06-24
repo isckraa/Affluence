@@ -186,13 +186,16 @@ class BoutiqueController extends AbstractController
         }
         if($boutique){
             try {
-                $boutique->setAdresse($newData->getAdresse());
-                $boutique->setCodePostal($newData->getCodePostal());
-                $boutique->setNom($newData->getNom());
-                $boutique->setUser($newData->getUser());
-                $boutique->setVille($newData->getVille());
-                $boutique->setLongitude($newData->getLongitude());
-                $boutique->setLatitude($newData->getLatitude());
+                $boutique->setAdresse($newData->getAdresse() ?? $boutique->getAdresse());
+                $boutique->setCodePostal($newData->getCodePostal() ?? $boutique->getCodePostal());
+                $boutique->setNom($newData->getNom() ?? $boutique->getNom());
+                $boutique->setUser($newData->getUser() ?? $boutique->getUser());
+                $boutique->setVille($newData->getVille() ?? $boutique->getVille());
+                $boutique->setLongitude($newData->getLongitude() ?? $boutique->getLongitude());
+                $boutique->setLatitude($newData->getLatitude() ?? $boutique->getLatitude());
+                $boutique->setMaxClient($newData->getMaxClient() ?? $boutique->getMaxClient());
+                $boutique->setMaskRequired($newData->getMaskRequired() !== null ? $newData->getMaskRequired() : $boutique->getMaskRequired());
+                $boutique->setGel($newData->getGel() !== null ? $newData->getGel() : $boutique->getGel());
                 $em->persist($boutique);
                 $em->flush();
                 return $this->json([

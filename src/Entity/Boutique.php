@@ -59,6 +59,21 @@ class Boutique
      */
     private $Latitude;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $maxClient;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $maskRequired;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $gel;
+
     public function __construct()
     {
         $this->fileAttente = new ArrayCollection();
@@ -180,6 +195,42 @@ class Boutique
     public function setLatitude(?float $Latitude): self
     {
         $this->Latitude = $Latitude;
+
+        return $this;
+    }
+
+    public function getMaxClient(): ?int
+    {
+        return $this->maxClient;
+    }
+
+    public function setMaxClient(?int $maxClient): self
+    {
+        $this->maxClient = $maxClient;
+
+        return $this;
+    }
+
+    public function getMaskRequired(): ?bool
+    {
+        return $this->maskRequired;
+    }
+
+    public function setMaskRequired(?bool $maskRequired): self
+    {
+        $this->maskRequired = $maskRequired;
+
+        return $this;
+    }
+
+    public function getGel(): ?bool
+    {
+        return $this->gel;
+    }
+
+    public function setGel(?bool $gel): self
+    {
+        $this->gel = $gel;
 
         return $this;
     }
