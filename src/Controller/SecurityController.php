@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,5 +49,27 @@ class SecurityController extends AbstractController
             'roles' => $user->getRoles()
         ]);
 
+    }
+
+    /**
+     * @param User $user
+     * @Route("/api/delete_user/{id}", name="user_delete", methods={"DELETE"})
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function apiDeleteUser(User $user) {
+        try {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->remove($user);
+            $entityManager->flush();
+            return $this->json([
+                'status' => 201,
+                'message' => "Delete user success"
+            ], 201);
+        } catch (\Exception $e) {
+            return $this->json([
+                'status' => 400,
+                'message' => "Delete user failed. Error : ".$e->getMessage()
+            ], 400);
+        }
     }
 }

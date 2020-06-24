@@ -48,7 +48,7 @@ class BoutiqueController extends AbstractController
     }
 
     /**
-     * @param BoutiqueRepository $boutique
+     * @param Boutique $boutique
      * @Route("/boutique/delete/{id}", name="boutique_delete", methods={"DELETE"})
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
