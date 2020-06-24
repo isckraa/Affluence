@@ -64,12 +64,12 @@ class SecurityController extends AbstractController
             return $this->json([
                 'status' => 201,
                 'message' => "Delete user success"
-            ], 201);
+            ], 201, ["Access-Control-Allow-Origin" => "*"]);
         } catch (\Exception $e) {
             return $this->json([
                 'status' => 400,
                 'message' => "Delete user failed. Error : ".$e->getMessage()
-            ], 400);
+            ], 400, ["Access-Control-Allow-Origin" => "*"]);
         }
     }
 }

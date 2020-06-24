@@ -79,12 +79,12 @@ class RegistrationController extends AbstractController
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
-            return $this->json($user, '201');
+            return $this->json($user, 201, ["Access-Control-Allow-Origin" => "*"]);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
                 'message' => $e->getMessage(),
-            ], 400);
+            ], 400, ["Access-Control-Allow-Origin" => "*"]);
         }
     }
 }

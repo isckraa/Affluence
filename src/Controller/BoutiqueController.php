@@ -34,7 +34,7 @@ class BoutiqueController extends AbstractController
             $boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
             $errors = $validator->validate($boutique);
             if(count($errors) > 0) {
-                return $this->json($errors, 400);
+                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*"]);
             }
             $em->persist($boutique);
             $em->flush();
@@ -43,7 +43,7 @@ class BoutiqueController extends AbstractController
             return $this->json([
                 'status' => 400,
                 'message' => $e->getMessage(),
-            ], 400);
+            ], 400, ["Access-Control-Allow-Origin" => "*"]);
         }
     }
 
@@ -60,12 +60,12 @@ class BoutiqueController extends AbstractController
             return $this->json([
                 'status' => 201,
                 'message' => "Delete store success"
-            ], 201);
+            ], 201, ["Access-Control-Allow-Origin" => "*"]);
         } catch (\Exception $e) {
             return $this->json([
                 'status' => 400,
                 'message' => "Delete store failed. Error : ".$e->getMessage()
-            ], 400);
+            ], 400, ["Access-Control-Allow-Origin" => "*"]);
         }
     }
 
@@ -74,7 +74,7 @@ class BoutiqueController extends AbstractController
      */
     public function list(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer)
     {
-        return $this->json($boutiqueRepository->findAll(), 200, []);
+        return $this->json($boutiqueRepository->findAll(), 200, ["Access-Control-Allow-Origin" => "*"]);
     }
 
     /**
@@ -83,7 +83,7 @@ class BoutiqueController extends AbstractController
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function findById(Boutique $boutique) {
-        return $this->json($boutique, 200, []);
+        return $this->json($boutique, 200, ["Access-Control-Allow-Origin" => "*"]);
     }
 
     /**
@@ -100,14 +100,14 @@ class BoutiqueController extends AbstractController
             $boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
             $errors = $validator->validate($boutique);
             if(count($errors) > 0) {
-                return $this->json($errors, 400);
+                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*"]);
             }
-            return $this->json($boutiqueRepository->findBy(["nom" => $boutique->getNom()]), 200, []);
+            return $this->json($boutiqueRepository->findBy(["nom" => $boutique->getNom()]), 200, ["Access-Control-Allow-Origin" => "*"]);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
                 'message' => $e->getMessage()
-            ], 400);
+            ], 400, ["Access-Control-Allow-Origin" => "*"]);
         }
     }
 
@@ -125,9 +125,9 @@ class BoutiqueController extends AbstractController
             $boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
             $errors = $validator->validate($boutique);
             if(count($errors) > 0) {
-                return $this->json($errors, 400);
+                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*"]);
             }
-            return $this->json($boutiqueRepository->findBy(["codePostal" => $boutique->getCodePostal()]), 200, []);
+            return $this->json($boutiqueRepository->findBy(["codePostal" => $boutique->getCodePostal()]), 200, ["Access-Control-Allow-Origin" => "*"]);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
@@ -150,14 +150,14 @@ class BoutiqueController extends AbstractController
             $boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
             $errors = $validator->validate($boutique);
             if(count($errors) > 0) {
-                return $this->json($errors, 400);
+                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*"]);
             }
-            return $this->json($boutiqueRepository->findBy(["ville" => $boutique->getVille()]), 200, []);
+            return $this->json($boutiqueRepository->findBy(["ville" => $boutique->getVille()]), 200, ["Access-Control-Allow-Origin" => "*"]);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
                 'message' => $e->getMessage()
-            ], 400);
+            ], 400, ["Access-Control-Allow-Origin" => "*"]);
         }
     }
 
@@ -176,13 +176,13 @@ class BoutiqueController extends AbstractController
             $newData = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
             $errors = $validator->validate($newData);
             if( count($errors) > 0) {
-                return $this->json($errors, 400);
+                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*"]);
             }
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
                 'message' => $e->getMessage()
-            ], 400);
+            ], 400, ["Access-Control-Allow-Origin" => "*"]);
         }
         if($boutique){
             try {
@@ -201,17 +201,17 @@ class BoutiqueController extends AbstractController
                 return $this->json([
                     'status' => 201,
                     'message' => 'Update store success'
-                ], 201);
+                ], 201, ["Access-Control-Allow-Origin" => "*"]);
             } catch (\Exception $e){
                 return $this->json([
                     'status' => 201,
                     'message' => 'Update store failed. Error : '.$e->getMessage()
-                ], 201);
+                ], 201, ["Access-Control-Allow-Origin" => "*"]);
             }
         }
         return $this->json([
             'status' => 400,
             'message' => 'Bad id'
-        ], 400);
+        ], 400, ["Access-Control-Allow-Origin" => "*"]);
     }
 }
