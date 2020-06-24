@@ -169,6 +169,31 @@ class BoutiqueController extends AbstractController
     }
 
     /**
+     * @param BoutiqueRepository $boutiqueRepository
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @param ValidatorInterface $validator
+     * @Route("/boutique/list/ville", name="boutique_list_ville", methods={"GET"})
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function findByVille(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer, Request $request, ValidatorInterface $validator) {
+        $jsonRequest = $request->getContent();
+        try {
+            $boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
+            $errors = $validator->validate($boutique);
+            if(count($errors) > 0) {
+                return $this->json($errors, 400);
+            }
+            return $this->json($boutiqueRepository->findBy(["ville" => $boutique->getVille()]), 200, []);
+        } catch (NotEncodableValueException $e) {
+            return $this->json([
+                'status' => 400,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    /**
      * @param Request $request
      * @param SerializerInterface $serializer
      * @param ValidatorInterface $validator
