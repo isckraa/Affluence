@@ -91,7 +91,7 @@ class BoutiqueController extends AbstractController
     /**
      * @param BoutiqueRepository $boutiqueRepository
      * @param SerializerInterface $serializer
-     * @Route("/boutique/list/id", name="boutique_list_id", methods={"GET", "POST"})
+     * @Route("/boutique/list/id", name="boutique_list_id", methods={"GET"})
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function findById(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer, Request $request, ValidatorInterface $validator) {
@@ -123,7 +123,7 @@ class BoutiqueController extends AbstractController
     /**
      * @param BoutiqueRepository $boutiqueRepository
      * @param SerializerInterface $serializer
-     * @Route("/boutique/list/nom", name="boutique_list_nom", methods={"GET", "POST"})
+     * @Route("/boutique/list/nom", name="boutique_list_nom", methods={"GET"})
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function findByNom(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer, Request $request, ValidatorInterface $validator) {
@@ -148,7 +148,7 @@ class BoutiqueController extends AbstractController
      * @param SerializerInterface $serializer
      * @param Request $request
      * @param ValidatorInterface $validator
-     * @Route("/boutique/list/code_postal", name="boutique_list_code_postal", methods={"GET", "POST"})
+     * @Route("/boutique/list/code_postal", name="boutique_list_code_postal", methods={"GET"})
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function findByCodePostal(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer, Request $request, ValidatorInterface $validator) {

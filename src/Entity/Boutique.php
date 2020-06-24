@@ -44,6 +44,11 @@ class Boutique
      */
     private $user;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $ville;
+
     public function __construct()
     {
         $this->fileAttente = new ArrayCollection();
@@ -129,6 +134,18 @@ class Boutique
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getVille(): ?string
+    {
+        return $this->ville;
+    }
+
+    public function setVille(string $ville): self
+    {
+        $this->ville = $ville;
 
         return $this;
     }
