@@ -50,7 +50,7 @@ class FileAttenteController extends AbstractController
             
             $errors = $validator->validate($fileAttente);
             if(count($errors) > 0) {
-                return $this->json($errors, 400);
+                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*"]);
             }
 
             $boutique = $boutiqueRepository->findOneBy(
@@ -66,12 +66,12 @@ class FileAttenteController extends AbstractController
                 }
             ]),true);
             //$response["boutique"] = $response["boutique"]["id"];
-            return $this->json($response,201);
+            return $this->json($response,201, ["Access-Control-Allow-Origin" => "*"]);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
                 'message' => $e->getMessage(),
-            ], 400);
+            ], 400, ["Access-Control-Allow-Origin" => "*"]);
         }
     }
 
@@ -87,7 +87,7 @@ class FileAttenteController extends AbstractController
                 }
             ]),true);
         $response["boutique"] = $response["boutique"]["id"];
-        return $this->json($response,201);
+        return $this->json($response,201, ["Access-Control-Allow-Origin" => "*"]);
     }
 
     /**
@@ -100,13 +100,13 @@ class FileAttenteController extends AbstractController
             $newData = $serializer->deserialize($jsonRequest, FileAttente::class, 'json');
             $errors = $validator->validate($newData);
             if( count($errors) > 0) {
-                return $this->json($errors, 400);
+                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*"]);
             }
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
                 'message' => $e->getMessage()
-            ], 400);
+            ], 400, ["Access-Control-Allow-Origin" => "*"]);
         }
         if($fileAttente){
             try {
@@ -121,18 +121,18 @@ class FileAttenteController extends AbstractController
                 return $this->json([
                     'status' => 201,
                     'message' => 'Update store success'
-                ], 201);
+                ], 201, ["Access-Control-Allow-Origin" => "*"]);
             } catch (\Exception $e){
                 return $this->json([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'Update store failed. Error : '.$e->getMessage()
-                ], 201);
+                ], 400, ["Access-Control-Allow-Origin" => "*"]);
             }
         }
         return $this->json([
             'status' => 400,
             'message' => 'Bad id'
-        ], 400);
+        ], 400, ["Access-Control-Allow-Origin" => "*"]);
     }
 
     /**
@@ -147,12 +147,12 @@ class FileAttenteController extends AbstractController
             return $this->json([
                 'status' => 201,
                 'message' => "Delete waiting queue success"
-            ], 201);
+            ], 201, ["Access-Control-Allow-Origin" => "*"]);
         } catch (\Exception $e) {
             return $this->json([
                 'status' => 400,
                 'message' => "Delete waiting queue failed. Error : ".$e->getMessage()
-            ], 400);
+            ], 400, ["Access-Control-Allow-Origin" => "*"]);
         }
     }
 
