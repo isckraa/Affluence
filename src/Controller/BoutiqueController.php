@@ -58,7 +58,7 @@ class BoutiqueController extends AbstractController
                 }
             ]),true);
             $response["user"] = $response["user"]["id"];
-            return $this->json($response,201);
+            return $this->json($response,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
@@ -125,7 +125,7 @@ class BoutiqueController extends AbstractController
             }
         ]),true);
         $response["user"] = $response["user"]["id"];
-        return $this->json($response,201);
+        return $this->json($response,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
     }
 
     /**
@@ -151,7 +151,7 @@ class BoutiqueController extends AbstractController
                 }
             ]),true);
             $response["user"] = $response["user"]["id"];
-            return $this->json($response,201);
+            return $this->json($response,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
@@ -183,7 +183,7 @@ class BoutiqueController extends AbstractController
                 }
             ]),true);
             $response["user"] = $response["user"]["id"];
-            return $this->json($response,201);
+            return $this->json($response,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
@@ -215,7 +215,7 @@ class BoutiqueController extends AbstractController
                 }
             ]),true);
             $response["user"] = $response["user"]["id"];
-            return $this->json($response,201);
+            return $this->json($response,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
