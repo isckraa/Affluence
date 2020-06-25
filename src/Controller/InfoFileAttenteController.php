@@ -108,6 +108,67 @@ class InfoFileAttenteController extends AbstractController
         ]),true);
         $response["user"] = $response["user"]["id"];
         $response["fileAttente"] = $response["fileAttente"]["id"];
+        $response["heureEntree"] = date_format($infoFileAttente->getHeureEntree(),'H:i:s');
+        $response["heureSortie"] = date_format($infoFileAttente->getHeureSortie(),'H:i:s');
         return $this->json($response,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
+    }
+
+    /**
+     * @param InfoFileAttente $infoFileAttente
+     * @param Request $request
+     * @param SerializerInterface $serializer
+     * @param ValidatorInterface $validator
+     * @param EntityManagerInterface $em
+     * @param UserRepository $userRepository
+     * @param FileAttenteRepository $fileAttenteRepository
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @Route("/info/update/{id}", name="info_update", methods={"PUT", "PATCH", "POST"})
+     */
+    public function update(InfoFileAttente $infoFileAttente, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, UserRepository $userRepository, FileAttenteRepository $fileAttenteRepository){
+        $jsonRequest = $request->getContent();
+        try {
+            $dataDecode = $serializer->decode($jsonRequest, 'json');
+            $newData = $serializer->deserialize($jsonRequest, InfoFileAttente::class, 'json');
+            $errors = $validator->validate($newData);
+            if( count($errors) > 0) {
+                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+            }
+        } catch (NotEncodableValueException $e) {
+            return $this->json([
+                'status' => 400,
+                'message' => $e->getMessage()
+            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+        }
+        if($infoFileAttente){
+            try {
+                $infoFileAttente->setAffluence($newData->getAffluence() ?? $infoFileAttente->getAffluence());
+                $infoFileAttente->setHeureEntree($newData->getHeureEntree() ?? $infoFileAttente->getHeureEntree());
+                $infoFileAttente->setHeureSortie($newData->getHeureSortie() ?? $infoFileAttente->getHeureSortie());
+                $infoFileAttente->setType($newData->getType() ?? $infoFileAttente->getType());
+                if (isset($dataDecode['userId'])) {
+                    $user = $userRepository->findOneBy(["id" => $dataDecode['userId']]);
+                    $infoFileAttente->setUser($user);
+                }
+                if (isset($dataDecode['fileAttenteId'])) {
+                    $fileAttente = $fileAttenteRepository->findOneBy(["id" => $dataDecode['userId']]);
+                    $infoFileAttente->setFileAttente($fileAttente);
+                }
+                $em->persist($infoFileAttente);
+                $em->flush();
+                return $this->json([
+                    'status' => 201,
+                    'message' => 'Update info success.'
+                ], 201, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+            } catch (\Exception $e){
+                return $this->json([
+                    'status' => 400,
+                    'message' => 'Update info failed. Error : '.$e->getMessage()
+                ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+            }
+        }
+        return $this->json([
+            'status' => 400,
+            'message' => 'Bad id'
+        ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
     }
 }
