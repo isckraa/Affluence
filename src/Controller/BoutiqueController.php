@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Boutique;
 use App\Repository\BoutiqueRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -27,15 +28,27 @@ class BoutiqueController extends AbstractController
 
     /**
      * @Route("/boutique/create", name="boutique_create", methods={"POST"})
+     * @param Request $request
+     * @param SerializerInterface $serializer
+     * @param EntityManagerInterface $em
+     * @param ValidatorInterface $validator
+     * @param UserRepository $userRepository
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function create(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator) {
+    public function create(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator, UserRepository $userRepository) {
         $jsonRequest = $request->getContent();
         try {
+            $dataDecode = $serializer->decode($jsonRequest, 'json');
+            $user = null;
+            if (isset($dataDecode['userId'])) {
+                $user = $userRepository->findOneBy(["id" => $dataDecode['userId']]);
+            }
             $boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
             $errors = $validator->validate($boutique);
             if(count($errors) > 0) {
                 return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*"]);
             }
+            $boutique->setUser($user);
             $em->persist($boutique);
             $em->flush();
             return $this->json($boutique, '201');
@@ -83,7 +96,7 @@ class BoutiqueController extends AbstractController
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function findById(Boutique $boutique) {
-        return $this->json($boutique, 200, ["Access-Control-Allow-Origin" => "*"]);
+        return $this->json($boutique, 200, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
     }
 
     /**
@@ -162,17 +175,19 @@ class BoutiqueController extends AbstractController
     }
 
     /**
+     * @param Boutique $boutique
      * @param Request $request
      * @param SerializerInterface $serializer
      * @param ValidatorInterface $validator
-     * @param Boutique $boutique
      * @param EntityManagerInterface $em
-     * @Route("/boutique/update/{id}", name="boutique_update", methods={"PUT", "PATCH"})
+     * @param UserRepository $userRepository
      * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @Route("/boutique/update/{id}", name="boutique_update", methods={"PUT", "PATCH"})
      */
-    public function update(Boutique $boutique, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em){
+    public function update(Boutique $boutique, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, UserRepository $userRepository){
         $jsonRequest = $request->getContent();
         try {
+            $dataDecode = $serializer->decode($jsonRequest, 'json');
             $newData = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
             $errors = $validator->validate($newData);
             if( count($errors) > 0) {
@@ -196,17 +211,21 @@ class BoutiqueController extends AbstractController
                 $boutique->setMaxClient($newData->getMaxClient() ?? $boutique->getMaxClient());
                 $boutique->setMaskRequired($newData->getMaskRequired() !== null ? $newData->getMaskRequired() : $boutique->getMaskRequired());
                 $boutique->setGel($newData->getGel() !== null ? $newData->getGel() : $boutique->getGel());
+                if (isset($dataDecode['userId'])) {
+                    $user = $userRepository->findOneBy(["id" => $dataDecode['userId']]);
+                    $boutique->setUser($user);
+                }
                 $em->persist($boutique);
                 $em->flush();
                 return $this->json([
                     'status' => 201,
-                    'message' => 'Update store success'
+                    'message' => 'Update store success.'
                 ], 201, ["Access-Control-Allow-Origin" => "*"]);
             } catch (\Exception $e){
                 return $this->json([
-                    'status' => 201,
+                    'status' => 400,
                     'message' => 'Update store failed. Error : '.$e->getMessage()
-                ], 201, ["Access-Control-Allow-Origin" => "*"]);
+                ], 400, ["Access-Control-Allow-Origin" => "*"]);
             }
         }
         return $this->json([
