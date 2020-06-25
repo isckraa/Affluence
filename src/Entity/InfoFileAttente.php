@@ -46,9 +46,10 @@ class InfoFileAttente
     private $user;
 
     /**
-     * @ORM\OneToMany(targetEntity=FileAttente::class, mappedBy="infoFileAttente")
+     * @ORM\ManyToOne(targetEntity=FileAttente::class, inversedBy="infoFileAttentes")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $fileAttentes;
+    private $fileAttente;
 
     public function __construct()
     {
@@ -120,33 +121,14 @@ class InfoFileAttente
         return $this;
     }
 
-    /**
-     * @return Collection|FileAttente[]
-     */
-    public function getFileAttentes(): Collection
+    public function getFileAttente(): ?FileAttente
     {
-        return $this->fileAttentes;
+        return $this->fileAttente;
     }
 
-    public function addFileAttente(FileAttente $fileAttente): self
+    public function setFileAttente(?FileAttente $fileAttente): self
     {
-        if (!$this->fileAttentes->contains($fileAttente)) {
-            $this->fileAttentes[] = $fileAttente;
-            $fileAttente->setInfoFileAttente($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFileAttente(FileAttente $fileAttente): self
-    {
-        if ($this->fileAttentes->contains($fileAttente)) {
-            $this->fileAttentes->removeElement($fileAttente);
-            // set the owning side to null (unless already changed)
-            if ($fileAttente->getInfoFileAttente() === $this) {
-                $fileAttente->setInfoFileAttente(null);
-            }
-        }
+        $this->fileAttente = $fileAttente;
 
         return $this;
     }
