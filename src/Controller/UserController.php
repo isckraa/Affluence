@@ -44,7 +44,7 @@ class UserController extends AbstractController
             $userPseudo[$i]["roles"] = $user->getRoles();
             $i++;
         }
-        return $this->json($userPseudo, 200, ["Access-Control-Allow-Origin" => "*"]);
+        return $this->json($userPseudo, 200, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
     }
 
     /**
@@ -53,7 +53,7 @@ class UserController extends AbstractController
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function findById(User $user) {
-        return $this->json($user, 200, ["Access-Control-Allow-Origin" => "*"]);
+        return $this->json($user, 200, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
     }
 
     /**
@@ -68,12 +68,12 @@ class UserController extends AbstractController
         $jsonRequest = $request->getContent();
         try {
             $user = $serializer->deserialize($jsonRequest, User::class, 'json');
-            return $this->json($userRepository->findBy(["pseudo" => $user->getPseudo()]), 200, ["Access-Control-Allow-Origin" => "*"]);
+            return $this->json($userRepository->findBy(["pseudo" => $user->getPseudo()]), 200, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
                 'message' => $e->getMessage()
-            ], 400, ["Access-Control-Allow-Origin" => "*"]);
+            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         }
     }
 
@@ -89,12 +89,12 @@ class UserController extends AbstractController
         $jsonRequest = $request->getContent();
         try {
             $user = $serializer->deserialize($jsonRequest, User::class, 'json');
-            return $this->json($userRepository->findBy(["email" => $user->getEmail()]), 200, ["Access-Control-Allow-Origin" => "*"]);
+            return $this->json($userRepository->findBy(["email" => $user->getEmail()]), 200, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
                 'message' => $e->getMessage()
-            ], 400, ["Access-Control-Allow-Origin" => "*"]);
+            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         }
     }
 
@@ -105,7 +105,7 @@ class UserController extends AbstractController
      */
     public function getPoints(User $user) {
         $points = $user->getPoints();
-        return $this->json($points, 200, ["Access-Control-Allow-Origin" => "*"]);
+        return $this->json($points, 200, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
     }
 
     /**
@@ -126,7 +126,7 @@ class UserController extends AbstractController
             return $this->json([
                 'status' => 400,
                 'message' => $e->getMessage()
-            ], 400, ["Access-Control-Allow-Origin" => "*"]);
+            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         }
         if($user){
             try {
@@ -150,17 +150,17 @@ class UserController extends AbstractController
                 return $this->json([
                     'status' => 201,
                     'message' => 'Update user success'
-                ], 201, ["Access-Control-Allow-Origin" => "*"]);
+                ], 201, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             } catch (\Exception $e){
                 return $this->json([
                     'status' => 400,
                     'message' => 'Update user failed. Error : '.$e->getMessage()
-                ], 400, ["Access-Control-Allow-Origin" => "*"]);
+                ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
         }
         return $this->json([
             'status' => 400,
             'message' => 'Bad id'
-        ], 400, ["Access-Control-Allow-Origin" => "*"]);
+        ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
     }
 }

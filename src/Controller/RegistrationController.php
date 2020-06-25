@@ -65,7 +65,7 @@ class RegistrationController extends AbstractController
             $user = $serializer->deserialize($jsonRequest, User::class, 'json');
             $errors = $validator->validate($user);
             if(count($errors) > 0) {
-                return $this->json($errors, 400);
+                return $this->json($errors, 400, ['Access-Control-Allow-Origin' => '*', "Content-Type" => "application/json"]);
             }
 
             // encode the plain password
@@ -79,12 +79,12 @@ class RegistrationController extends AbstractController
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
-            return $this->json($user, 201, ["Access-Control-Allow-Origin" => "*"]);
+            return $this->json($user, 201, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
                 'message' => $e->getMessage(),
-            ], 400, ["Access-Control-Allow-Origin" => "*"]);
+            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         }
     }
 }

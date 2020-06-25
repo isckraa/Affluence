@@ -46,7 +46,7 @@ class BoutiqueController extends AbstractController
             $boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
             $errors = $validator->validate($boutique);
             if(count($errors) > 0) {
-                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*"]);
+                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
             $boutique->setUser($user);
             $em->persist($boutique);
@@ -56,7 +56,7 @@ class BoutiqueController extends AbstractController
             return $this->json([
                 'status' => 400,
                 'message' => $e->getMessage(),
-            ], 400, ["Access-Control-Allow-Origin" => "*"]);
+            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         }
     }
 
@@ -73,12 +73,12 @@ class BoutiqueController extends AbstractController
             return $this->json([
                 'status' => 201,
                 'message' => "Delete store success"
-            ], 201, ["Access-Control-Allow-Origin" => "*"]);
+            ], 201, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         } catch (\Exception $e) {
             return $this->json([
                 'status' => 400,
                 'message' => "Delete store failed. Error : ".$e->getMessage()
-            ], 400, ["Access-Control-Allow-Origin" => "*"]);
+            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         }
     }
 
@@ -87,7 +87,7 @@ class BoutiqueController extends AbstractController
      */
     public function list(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer)
     {
-        return $this->json($boutiqueRepository->findAll(), 200, ["Access-Control-Allow-Origin" => "*"]);
+        return $this->json($boutiqueRepository->findAll(), 200, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
     }
 
     /**
@@ -113,14 +113,14 @@ class BoutiqueController extends AbstractController
             $boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
             $errors = $validator->validate($boutique);
             if(count($errors) > 0) {
-                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*"]);
+                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
-            return $this->json($boutiqueRepository->findBy(["nom" => $boutique->getNom()]), 200, ["Access-Control-Allow-Origin" => "*"]);
+            return $this->json($boutiqueRepository->findBy(["nom" => $boutique->getNom()]), 200, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
                 'message' => $e->getMessage()
-            ], 400, ["Access-Control-Allow-Origin" => "*"]);
+            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         }
     }
 
@@ -138,14 +138,14 @@ class BoutiqueController extends AbstractController
             $boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
             $errors = $validator->validate($boutique);
             if(count($errors) > 0) {
-                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*"]);
+                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
-            return $this->json($boutiqueRepository->findBy(["codePostal" => $boutique->getCodePostal()]), 200, ["Access-Control-Allow-Origin" => "*"]);
+            return $this->json($boutiqueRepository->findBy(["codePostal" => $boutique->getCodePostal()]), 200, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
                 'message' => $e->getMessage()
-            ], 400);
+            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         }
     }
 
@@ -163,14 +163,14 @@ class BoutiqueController extends AbstractController
             $boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
             $errors = $validator->validate($boutique);
             if(count($errors) > 0) {
-                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*"]);
+                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
-            return $this->json($boutiqueRepository->findBy(["ville" => $boutique->getVille()]), 200, ["Access-Control-Allow-Origin" => "*"]);
+            return $this->json($boutiqueRepository->findBy(["ville" => $boutique->getVille()]), 200, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
                 'message' => $e->getMessage()
-            ], 400, ["Access-Control-Allow-Origin" => "*"]);
+            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         }
     }
 
@@ -191,13 +191,13 @@ class BoutiqueController extends AbstractController
             $newData = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
             $errors = $validator->validate($newData);
             if( count($errors) > 0) {
-                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*"]);
+                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
                 'message' => $e->getMessage()
-            ], 400, ["Access-Control-Allow-Origin" => "*"]);
+            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         }
         if($boutique){
             try {
@@ -220,17 +220,17 @@ class BoutiqueController extends AbstractController
                 return $this->json([
                     'status' => 201,
                     'message' => 'Update store success.'
-                ], 201, ["Access-Control-Allow-Origin" => "*"]);
+                ], 201, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             } catch (\Exception $e){
                 return $this->json([
                     'status' => 400,
                     'message' => 'Update store failed. Error : '.$e->getMessage()
-                ], 400, ["Access-Control-Allow-Origin" => "*"]);
+                ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
         }
         return $this->json([
             'status' => 400,
             'message' => 'Bad id'
-        ], 400, ["Access-Control-Allow-Origin" => "*"]);
+        ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
     }
 }
