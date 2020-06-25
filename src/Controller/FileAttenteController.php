@@ -65,7 +65,7 @@ class FileAttenteController extends AbstractController
                     return $object->getId();
                 }
             ]),true);
-            //$response["boutique"] = $response["boutique"]["id"];
+            $response["boutique"] = $response["boutique"]["id"];
             return $this->json($response,201, ["Access-Control-Allow-Origin" => "*"]);
         } catch (NotEncodableValueException $e) {
             return $this->json([
