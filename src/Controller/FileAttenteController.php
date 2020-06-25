@@ -38,39 +38,35 @@ class FileAttenteController extends AbstractController
      */
     public function create(Request $request, BoutiqueRepository $boutiqueRepository, 
                             SerializerInterface $serializer, EntityManagerInterface $em, 
-                            ValidatorInterface $validator): JsonResponse
+                            ValidatorInterface $validator): Response
     {
         $jsonRequest = $request->getContent();
         try {
             $fileAttente = $serializer->deserialize($jsonRequest, FileAttente::class, 'json', [
                 AbstractNormalizer::IGNORED_ATTRIBUTES => ['boutique'],
-                'circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }
             ]);
-            var_dump($fileAttente);
-
             
-            $json = json_decode($jsonRequest,true);
-            var_dump($json);
+            $json = $serializer->decode($jsonRequest,'json');
             
             $errors = $validator->validate($fileAttente);
             if(count($errors) > 0) {
                 return $this->json($errors, 400);
             }
 
-            $boutique = $boutiqueRepository->find(
-                ['id'=> $json["boutique"] ]
+            $boutique = $boutiqueRepository->findOneBy(
+                ['id'=> $json["boutiqueId"] ]
             );
-            //$fileAttente->setBoutique($boutique);
-
-            $boutique->addFileAttente($fileAttente);
-
-            //var_dump($boutique);
+            $fileAttente->setBoutique($boutique);
             $em->persist($fileAttente);
-            $em->persist($boutique);
             $em->flush();
-            return $this->json($fileAttente, '201');
+
+            $response = json_decode($serializer->serialize($fileAttente, 'json', [
+                AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
+                    return $object->getId();
+                }
+            ]),true);
+            //$response["boutique"] = $response["boutique"]["id"];
+            return $this->json($response,201);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
@@ -82,9 +78,16 @@ class FileAttenteController extends AbstractController
     /**
      * @Route("/list/{id}", name="file_attente_show", methods={"GET"})
      */
-    public function show(FileAttente $fileAttente): JsonResponse
+    public function show(SerializerInterface $serializer,FileAttente $fileAttente): JsonResponse
     {
-        return $this->json($fileAttente,200,[]);
+
+        $response = json_decode($serializer->serialize($fileAttente, 'json', [
+                AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
+                    return $object->getId();
+                }
+            ]),true);
+        $response["boutique"] = $response["boutique"]["id"];
+        return $this->json($response,201);
     }
 
     /**
@@ -111,8 +114,6 @@ class FileAttenteController extends AbstractController
                     $fileAttente->setDuree($newData->getDuree());
                 if($newData->getType() !== NULL)
                     $fileAttente->setType($newData->getType());
-                if($newData->getInfoFileAttente() !== NULL)
-                    $fileAttente->setInfoFileAttente($newData->getInfoFileAttente());
                 if($newData->getBoutique() !== NULL)
                     $fileAttente->setBoutique($newData->getBoutique());
                 $em->persist($fileAttente);

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\FileAttenteRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -28,15 +30,20 @@ class FileAttente
     private $duree;
 
     /**
-     * @ORM\ManyToOne(targetEntity=InfoFileAttente::class, inversedBy="fileAttentes")
-     */
-    private $infoFileAttente;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Boutique::class, inversedBy="fileAttente",cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=Boutique::class, inversedBy="fileAttente",cascade={"persist"})
      * @ORM\JoinColumn(nullable=false, name="boutique_id", referencedColumnName="id")
      */
     private $boutique;
+
+    /**
+     * @ORM\OneToMany(targetEntity=InfoFileAttente::class, mappedBy="fileAttente")
+     */
+    private $infoFileAttentes;
+
+    public function __construct()
+    {
+        $this->infoFileAttentes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -67,18 +74,6 @@ class FileAttente
         return $this;
     }
 
-    public function getInfoFileAttente(): ?InfoFileAttente
-    {
-        return $this->infoFileAttente;
-    }
-
-    public function setInfoFileAttente(?InfoFileAttente $infoFileAttente): self
-    {
-        $this->infoFileAttente = $infoFileAttente;
-
-        return $this;
-    }
-
     public function getBoutique(): ?Boutique
     {
         return $this->boutique;
@@ -87,6 +82,37 @@ class FileAttente
     public function setBoutique(?Boutique $boutique): self
     {
         $this->boutique = $boutique;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|InfoFileAttente[]
+     */
+    public function getInfoFileAttentes(): Collection
+    {
+        return $this->infoFileAttentes;
+    }
+
+    public function addInfoFileAttente(InfoFileAttente $infoFileAttente): self
+    {
+        if (!$this->infoFileAttentes->contains($infoFileAttente)) {
+            $this->infoFileAttentes[] = $infoFileAttente;
+            $infoFileAttente->setFileAttente($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInfoFileAttente(InfoFileAttente $infoFileAttente): self
+    {
+        if ($this->infoFileAttentes->contains($infoFileAttente)) {
+            $this->infoFileAttentes->removeElement($infoFileAttente);
+            // set the owning side to null (unless already changed)
+            if ($infoFileAttente->getFileAttente() === $this) {
+                $infoFileAttente->setFileAttente(null);
+            }
+        }
 
         return $this;
     }
