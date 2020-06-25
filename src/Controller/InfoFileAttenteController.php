@@ -71,4 +71,26 @@ class InfoFileAttenteController extends AbstractController
             ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         }
     }
+
+    /**
+     * @param InfoFileAttente $infoFileAttente
+     * @Route("/info/delete/{id}", name="info_delete", methods={"DELETE"})
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function delete(InfoFileAttente $infoFileAttente) {
+        try {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->remove($infoFileAttente);
+            $entityManager->flush();
+            return $this->json([
+                'status' => 201,
+                'message' => "Delete info success"
+            ], 201, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'status' => 400,
+                'message' => "Delete info failed. Error : ".$e->getMessage()
+            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+        }
+    }
 }
