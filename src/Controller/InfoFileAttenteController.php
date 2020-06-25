@@ -93,4 +93,21 @@ class InfoFileAttenteController extends AbstractController
             ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         }
     }
+
+    /**
+     * @param InfoFileAttente $infoFileAttente
+     * @param SerializerInterface $serializer
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @Route("/info/list/{id}", name="info_list_id", methods={"GET"})
+     */
+    public function findById(InfoFileAttente $infoFileAttente, SerializerInterface $serializer) {
+        $response = json_decode($serializer->serialize($infoFileAttente, 'json', [
+            AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
+                return $object->getId();
+            }
+        ]),true);
+        $response["user"] = $response["user"]["id"];
+        $response["fileAttente"] = $response["fileAttente"]["id"];
+        return $this->json($response,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
+    }
 }
