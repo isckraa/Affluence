@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Boutique;
 use App\Entity\InfoFileAttente;
+use App\Entity\User;
 use App\Repository\FileAttenteRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -142,6 +143,34 @@ class InfoFileAttenteController extends AbstractController
                 $infosFileAttente[$i]["infoFileAttentes"][$j] = $infoFileAttente;
                 $j++;
             }
+            $i++;
+        }
+        return $this->json($infosFileAttente, 200, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+    }
+
+    /**
+     * @param User $user
+     * @param SerializerInterface $serializer
+     * @Route("/info/user/{id}", name="info_user", methods={"GET"})
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function findByUser(User $user, SerializerInterface $serializer) {
+        $infosFileAttente = [];
+        $i = 0;
+        foreach($user->getInfoFileAttentes()->toArray() as $fileAttente) {
+            $infosFileAttente[$i] = json_decode($serializer->serialize($fileAttente, 'json', [
+                AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
+                    return $object->getId();
+                }
+            ]),true);
+            if(isset($infoFileAttente[$i]["user"])) {
+                $infosFileAttente[$i]["user"] = $infosFileAttente[$i]["user"]["id"];
+            }
+            // Return only hour and minutes.
+            $infosFileAttente[$i]["heureEntree"] = substr($infosFileAttente[$i]["heureEntree"], 11, 5);
+            $infosFileAttente[$i]["heureSortie"] = substr($infosFileAttente[$i]["heureSortie"], 11, 5);
+            $infosFileAttente[$i]["user"] = $infosFileAttente[$i]["user"]["id"];
+            $infosFileAttente[$i]["fileAttente"] = $infosFileAttente[$i]["fileAttente"]["id"];
             $i++;
         }
         return $this->json($infosFileAttente, 200, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
