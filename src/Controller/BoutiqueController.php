@@ -106,7 +106,19 @@ class BoutiqueController extends AbstractController
                     return $object->getId();
                 }
             ]),true);
-            $boutiqueSerialize[$i]["user"] = $boutiqueSerialize[$i]["user"]["id"];
+            if(isset($boutiqueSerialize[$i]["user"])) {
+                $boutiqueSerialize[$i]["user"] = $boutiqueSerialize[$i]["user"]["id"];
+            }
+            if(isset($boutiqueSerialize[$i]["fileAttente"])) {
+                $fileAttenteData = $boutiqueSerialize[$i]["fileAttente"];
+                $j = 0;
+                foreach ($fileAttenteData as $fileAttente) {
+                    $fileAttente = $fileAttente["id"];
+                    $fileAttenteData[$j] = $fileAttente;
+                    $j++;
+                }
+                $boutiqueSerialize[$i]["fileAttente"] = $fileAttenteData;
+            }
             $i++;
         }
         return $this->json($boutiqueSerialize, 200, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
@@ -124,7 +136,19 @@ class BoutiqueController extends AbstractController
                 return $object->getId();
             }
         ]),true);
-        $response["user"] = $response["user"]["id"];
+        if(isset($response["user"])) {
+            $response["user"] = $response["user"]["id"];
+        }
+        if(isset($response["fileAttente"])) {
+            $fileAttenteData = $response["fileAttente"];
+            $j = 0;
+            foreach ($fileAttenteData as $fileAttente) {
+                $fileAttente = $fileAttente["id"];
+                $fileAttenteData[$j] = $fileAttente;
+                $j++;
+            }
+            $response["fileAttente"] = $fileAttenteData;
+        }
         return $this->json($response,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
     }
 
@@ -144,14 +168,30 @@ class BoutiqueController extends AbstractController
             if(count($errors) > 0) {
                 return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
-            $boutique = $boutiqueRepository->findBy(["nom" => $boutique->getNom()]);
-            $response = json_decode($serializer->serialize($boutique, 'json', [
-                AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
-                    return $object->getId();
+            $boutiques = $boutiqueRepository->findBy(["nom" => $boutique->getNom()]);
+            $i = 0;
+            foreach($boutiques as $boutique) {
+                $boutiqueSerialize[$i] = json_decode($serializer->serialize($boutique, 'json', [
+                    AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
+                        return $object->getId();
+                    }
+                ]),true);
+                if(isset($boutiqueSerialize[$i]["user"])) {
+                    $boutiqueSerialize[$i]["user"] = $boutiqueSerialize[$i]["user"]["id"];
                 }
-            ]),true);
-            $response["user"] = $response["user"]["id"];
-            return $this->json($response,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
+                if(isset($boutiqueSerialize[$i]["fileAttente"])) {
+                    $fileAttenteData = $boutiqueSerialize[$i]["fileAttente"];
+                    $j = 0;
+                    foreach ($fileAttenteData as $fileAttente) {
+                        $fileAttente = $fileAttente["id"];
+                        $fileAttenteData[$j] = $fileAttente;
+                        $j++;
+                    }
+                    $boutiqueSerialize[$i]["fileAttente"] = $fileAttenteData;
+                }
+                $i++;
+            }
+            return $this->json($boutiqueSerialize,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
@@ -176,14 +216,30 @@ class BoutiqueController extends AbstractController
             if(count($errors) > 0) {
                 return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
-            $boutique = $boutiqueRepository->findBy(["codePostal" => $boutique->getCodePostal()]);
-            $response = json_decode($serializer->serialize($boutique, 'json', [
-                AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
-                    return $object->getId();
+            $boutiques = $boutiqueRepository->findBy(["codePostal" => $boutique->getCodePostal()]);
+            $i = 0;
+            foreach($boutiques as $boutique) {
+                $boutiqueSerialize[$i] = json_decode($serializer->serialize($boutique, 'json', [
+                    AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
+                        return $object->getId();
+                    }
+                ]),true);
+                if(isset($boutiqueSerialize[$i]["user"])) {
+                    $boutiqueSerialize[$i]["user"] = $boutiqueSerialize[$i]["user"]["id"];
                 }
-            ]),true);
-            $response["user"] = $response["user"]["id"];
-            return $this->json($response,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
+                if(isset($boutiqueSerialize[$i]["fileAttente"])) {
+                    $fileAttenteData = $boutiqueSerialize[$i]["fileAttente"];
+                    $j = 0;
+                    foreach ($fileAttenteData as $fileAttente) {
+                        $fileAttente = $fileAttente["id"];
+                        $fileAttenteData[$j] = $fileAttente;
+                        $j++;
+                    }
+                    $boutiqueSerialize[$i]["fileAttente"] = $fileAttenteData;
+                }
+                $i++;
+            }
+            return $this->json($boutiqueSerialize,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
@@ -208,14 +264,30 @@ class BoutiqueController extends AbstractController
             if(count($errors) > 0) {
                 return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
-            $boutique = $boutiqueRepository->findBy(["ville" => $boutique->getVille()]);
-            $response = json_decode($serializer->serialize($boutique, 'json', [
-                AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
-                    return $object->getId();
+            $boutiques = $boutiqueRepository->findBy(["ville" => $boutique->getVille()]);
+            $i = 0;
+            foreach($boutiques as $boutique) {
+                $boutiqueSerialize[$i] = json_decode($serializer->serialize($boutique, 'json', [
+                    AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
+                        return $object->getId();
+                    }
+                ]),true);
+                if(isset($boutiqueSerialize[$i]["user"])) {
+                    $boutiqueSerialize[$i]["user"] = $boutiqueSerialize[$i]["user"]["id"];
                 }
-            ]),true);
-            $response["user"] = $response["user"]["id"];
-            return $this->json($response,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
+                if(isset($boutiqueSerialize[$i]["fileAttente"])) {
+                    $fileAttenteData = $boutiqueSerialize[$i]["fileAttente"];
+                    $j = 0;
+                    foreach ($fileAttenteData as $fileAttente) {
+                        $fileAttente = $fileAttente["id"];
+                        $fileAttenteData[$j] = $fileAttente;
+                        $j++;
+                    }
+                    $boutiqueSerialize[$i]["fileAttente"] = $fileAttenteData;
+                }
+                $i++;
+            }
+            return $this->json($boutiqueSerialize,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
