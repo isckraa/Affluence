@@ -90,9 +90,9 @@ class InfoFileAttenteController extends AbstractController
             ], 201, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         } catch (\Exception $e) {
             return $this->json([
-                'status' => 400,
+                'status' => 304,
                 'message' => "Delete info failed. Error : ".$e->getMessage()
-            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+            ], 304, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         }
     }
 
@@ -112,7 +112,7 @@ class InfoFileAttenteController extends AbstractController
         $response["fileAttente"] = $response["fileAttente"]["id"];
         $response["heureEntree"] = date_format($infoFileAttente->getHeureEntree(),'H:i:s');
         $response["heureSortie"] = date_format($infoFileAttente->getHeureSortie(),'H:i:s');
-        return $this->json($response,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
+        return $this->json($response,200, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
     }
 
     /**
@@ -224,9 +224,9 @@ class InfoFileAttenteController extends AbstractController
                 ], 201, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             } catch (\Exception $e){
                 return $this->json([
-                    'status' => 400,
+                    'status' => 304,
                     'message' => 'Update info failed. Error : '.$e->getMessage()
-                ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+                ], 304, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
         }
         return $this->json([

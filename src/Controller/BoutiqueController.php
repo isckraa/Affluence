@@ -84,9 +84,9 @@ class BoutiqueController extends AbstractController
             ], 201, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         } catch (\Exception $e) {
             return $this->json([
-                'status' => 400,
+                'status' => 304,
                 'message' => "Delete store failed. Error : ".$e->getMessage()
-            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+            ], 304, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         }
     }
 
@@ -150,7 +150,7 @@ class BoutiqueController extends AbstractController
             }
             $response["fileAttente"] = $fileAttenteData;
         }
-        return $this->json($response,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
+        return $this->json($response,200, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
     }
 
     /**
@@ -193,7 +193,7 @@ class BoutiqueController extends AbstractController
                 }
                 $i++;
             }
-            return $this->json($boutiqueSerialize,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
+            return $this->json($boutiqueSerialize,200, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
@@ -242,7 +242,7 @@ class BoutiqueController extends AbstractController
                 }
                 $i++;
             }
-            return $this->json($boutiqueSerialize,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
+            return $this->json($boutiqueSerialize,200, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
@@ -291,7 +291,7 @@ class BoutiqueController extends AbstractController
                 }
                 $i++;
             }
-            return $this->json($boutiqueSerialize,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
+            return $this->json($boutiqueSerialize,200, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,
@@ -361,9 +361,9 @@ class BoutiqueController extends AbstractController
                 ], 201, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             } catch (\Exception $e){
                 return $this->json([
-                    'status' => 400,
+                    'status' => 304,
                     'message' => 'Update store failed. Error : '.$e->getMessage()
-                ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+                ], 304, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
         }
         return $this->json([

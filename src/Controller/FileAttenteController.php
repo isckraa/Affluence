@@ -87,7 +87,7 @@ class FileAttenteController extends AbstractController
                 }
             ]),true);
         $response["boutique"] = $response["boutique"]["id"];
-        return $this->json($response,201, ["Access-Control-Allow-Origin" => "*"]);
+        return $this->json($response,200, ["Access-Control-Allow-Origin" => "*"]);
     }
 
     /**
@@ -120,13 +120,13 @@ class FileAttenteController extends AbstractController
                 $em->flush();
                 return $this->json([
                     'status' => 201,
-                    'message' => 'Update store success'
+                    'message' => 'Update await list success'
                 ], 201, ["Access-Control-Allow-Origin" => "*"]);
             } catch (\Exception $e){
                 return $this->json([
-                    'status' => 400,
-                    'message' => 'Update store failed. Error : '.$e->getMessage()
-                ], 400, ["Access-Control-Allow-Origin" => "*"]);
+                    'status' => 304,
+                    'message' => 'Update await list failed. Error : '.$e->getMessage()
+                ], 304, ["Access-Control-Allow-Origin" => "*"]);
             }
         }
         return $this->json([
@@ -150,9 +150,9 @@ class FileAttenteController extends AbstractController
             ], 201, ["Access-Control-Allow-Origin" => "*"]);
         } catch (\Exception $e) {
             return $this->json([
-                'status' => 400,
+                'status' => 304,
                 'message' => "Delete waiting queue failed. Error : ".$e->getMessage()
-            ], 400, ["Access-Control-Allow-Origin" => "*"]);
+            ], 304, ["Access-Control-Allow-Origin" => "*"]);
         }
     }
 
