@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Boutique;
 use App\Entity\InfoFileAttente;
 use App\Repository\FileAttenteRepository;
 use App\Repository\UserRepository;
@@ -111,6 +112,39 @@ class InfoFileAttenteController extends AbstractController
         $response["heureEntree"] = date_format($infoFileAttente->getHeureEntree(),'H:i:s');
         $response["heureSortie"] = date_format($infoFileAttente->getHeureSortie(),'H:i:s');
         return $this->json($response,201, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
+    }
+
+    /**
+     * @param Boutique $boutique
+     * @param SerializerInterface $serializer
+     * @Route("/info/boutique/{id}", name="info_boutique", methods={"GET"})
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function findByBoutique(Boutique $boutique, SerializerInterface $serializer) {
+        $filesAttente = $boutique->getFileAttente();
+        $infosFileAttente = [];
+        $i = 0;
+        foreach($filesAttente as $fileAttente) {
+            $infosFileAttente[$i] = json_decode($serializer->serialize($fileAttente, 'json', [
+                AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
+                    return $object->getId();
+                }
+            ]),true);
+            // $infosFileAttente[$i]["user"] = $infosFileAttente[$i]["user"]["id"];
+            $infosFileAttente[$i]["boutique"] = $infosFileAttente[$i]["boutique"]["id"];
+            // Return only hour and minutes.
+            $infosFileAttente[$i]["duree"] = substr($infosFileAttente[$i]["duree"], 11, 5);
+            $j =0;
+            foreach($infosFileAttente[$i]["infoFileAttentes"] as $infoFileAttente) {
+                $infoFileAttente["user"] = $infoFileAttente["user"]["id"];
+                $infoFileAttente["heureEntree"] = substr($infoFileAttente["heureEntree"],11, 5);
+                $infoFileAttente["heureSortie"] = substr($infoFileAttente["heureSortie"],11, 5);
+                $infosFileAttente[$i]["infoFileAttentes"][$j] = $infoFileAttente;
+                $j++;
+            }
+            $i++;
+        }
+        return $this->json($infosFileAttente, 200, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
     }
 
     /**

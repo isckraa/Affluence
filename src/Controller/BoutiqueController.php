@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Boutique;
 use App\Repository\BoutiqueRepository;
+use App\Repository\FileAttenteRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -309,7 +310,7 @@ class BoutiqueController extends AbstractController
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      * @Route("/boutique/update/{id}", name="boutique_update", methods={"PUT", "PATCH", "POST"})
      */
-    public function update(Boutique $boutique, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, UserRepository $userRepository){
+    public function update(Boutique $boutique, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, UserRepository $userRepository, FileAttenteRepository $fileAttenteRepository){
         $jsonRequest = $request->getContent();
         try {
             $dataDecode = $serializer->decode($jsonRequest, 'json');
@@ -339,6 +340,18 @@ class BoutiqueController extends AbstractController
                 if (isset($dataDecode['userId'])) {
                     $user = $userRepository->findOneBy(["id" => $dataDecode['userId']]);
                     $boutique->setUser($user);
+                }
+                if (isset($dataDecode['addFileAttenteId'])) {
+                    $fileAttente = $fileAttenteRepository->findOneBy(["id" => $dataDecode['addFileAttenteId']]);
+                    $boutique = $boutique->addFileAttente($fileAttente);
+                }
+                if (isset($dataDecode['removeFileAttenteId'])) {
+                    $fileAttente = $fileAttenteRepository->findOneBy(["id" => $dataDecode['removeFileAttenteId']]);
+                    // Verification if the fileAttente is in the boutique data.
+                    if (in_array($fileAttente, $boutique->getFileAttente()->toArray())) {
+                        // $boutique = $boutique->removeFileAttente($fileAttente);
+                        $em->remove($fileAttente);
+                    }
                 }
                 $em->persist($boutique);
                 $em->flush();
