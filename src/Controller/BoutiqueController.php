@@ -162,14 +162,16 @@ class BoutiqueController extends AbstractController
      * @Route("/boutique/list_nom", name="boutique_list_nom", methods={"GET"})
      */
     public function findByNom(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer, Request $request, ValidatorInterface $validator) {
-        $jsonRequest = $request->getContent();
+        $nom = $request->get('nom');
+        // $jsonRequest = $request->getContent();
         try {
-            $boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
+            /* $boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
             $errors = $validator->validate($boutique);
             if(count($errors) > 0) {
                 return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
-            $boutiques = $boutiqueRepository->findByApproximatifNom($boutique->getNom());
+            $boutiques = $boutiqueRepository->findByApproximatifNom($boutique->getNom()); */
+            $boutiques = $boutiqueRepository->findByApproximatifNom($nom);
             $i = 0;
             $boutiqueSerialize = [];
             foreach($boutiques as $boutique) {
@@ -211,14 +213,16 @@ class BoutiqueController extends AbstractController
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function findByCodePostal(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer, Request $request, ValidatorInterface $validator) {
-        $jsonRequest = $request->getContent();
+        $codePostal = $request->get('codePostal');
+        // $jsonRequest = $request->getContent();
         try {
-            $boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
+            /* $boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
             $errors = $validator->validate($boutique);
             if(count($errors) > 0) {
                 return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
-            $boutiques = $boutiqueRepository->findByApproximatifCodePostal($boutique->getCodePostal());
+            $boutiques = $boutiqueRepository->findByApproximatifCodePostal($boutique->getCodePostal());*/
+            $boutiques = $boutiqueRepository->findByApproximatifCodePostal($codePostal);
             $boutiqueSerialize = [];
             $i = 0;
             foreach($boutiques as $boutique) {
@@ -260,14 +264,16 @@ class BoutiqueController extends AbstractController
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function findByVille(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer, Request $request, ValidatorInterface $validator) {
-        $jsonRequest = $request->getContent();
+        $ville = $request->get('ville');
+        // $jsonRequest = $request->getContent();
         try {
-            $boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
+            /*$boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
             $errors = $validator->validate($boutique);
             if(count($errors) > 0) {
                 return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
-            $boutiques = $boutiqueRepository->findByApproximatifVille($boutique->getVille());
+            $boutiques = $boutiqueRepository->findByApproximatifVille($boutique->getVille());*/
+            $boutiques = $boutiqueRepository->findByApproximatifVille($ville);
             $boutiqueSerialize = [];
             $i = 0;
             foreach($boutiques as $boutique) {
