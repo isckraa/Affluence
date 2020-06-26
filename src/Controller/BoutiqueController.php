@@ -168,8 +168,9 @@ class BoutiqueController extends AbstractController
             if(count($errors) > 0) {
                 return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
-            $boutiques = $boutiqueRepository->findBy(["nom" => $boutique->getNom()]);
+            $boutiques = $boutiqueRepository->findByApproximatifNom($boutique->getNom());
             $i = 0;
+            $boutiqueSerialize = [];
             foreach($boutiques as $boutique) {
                 $boutiqueSerialize[$i] = json_decode($serializer->serialize($boutique, 'json', [
                     AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
@@ -216,7 +217,8 @@ class BoutiqueController extends AbstractController
             if(count($errors) > 0) {
                 return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
-            $boutiques = $boutiqueRepository->findBy(["codePostal" => $boutique->getCodePostal()]);
+            $boutiques = $boutiqueRepository->findByApproximatifCodePostal($boutique->getCodePostal());
+            $boutiqueSerialize = [];
             $i = 0;
             foreach($boutiques as $boutique) {
                 $boutiqueSerialize[$i] = json_decode($serializer->serialize($boutique, 'json', [
@@ -264,7 +266,8 @@ class BoutiqueController extends AbstractController
             if(count($errors) > 0) {
                 return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
-            $boutiques = $boutiqueRepository->findBy(["ville" => $boutique->getVille()]);
+            $boutiques = $boutiqueRepository->findByApproximatifVille($boutique->getVille());
+            $boutiqueSerialize = [];
             $i = 0;
             foreach($boutiques as $boutique) {
                 $boutiqueSerialize[$i] = json_decode($serializer->serialize($boutique, 'json', [

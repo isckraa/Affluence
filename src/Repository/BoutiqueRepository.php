@@ -47,4 +47,46 @@ class BoutiqueRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    /**
+     * @param $value
+     * @return Boutique[]
+     */
+    public function findByApproximatifNom($value) {
+        $qb = $this->createQueryBuilder('b');
+        return $qb->where($qb->expr()->like('b.nom', ':val'))
+            ->setParameter('val', '%'.$value.'%')
+            ->orderBy('b.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    /**
+     * @param $value
+     * @return Boutique[]
+     */
+    public function findByApproximatifVille($value) {
+        $qb = $this->createQueryBuilder('b');
+        return $qb->where($qb->expr()->like('b.ville', ':val'))
+            ->setParameter('val', '%'.$value.'%')
+            ->orderBy('b.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    /**
+     * @param $value
+     * @return Boutique[]
+     */
+    public function findByApproximatifCodePostal($value) {
+        $qb = $this->createQueryBuilder('b');
+        return $qb->where($qb->expr()->like('b.codePostal', ':val'))
+            ->setParameter('val', '%'.$value.'%')
+            ->orderBy('b.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
 }
