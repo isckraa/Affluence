@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Repository\UserRepository;
 use App\Security\LogginFormAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -58,11 +59,21 @@ class RegistrationController extends AbstractController
     /**
      * @Route("/user/register", name="api_register", methods={"POST"})
      */
-    public function apiRegister(Request $request, UserPasswordEncoderInterface $passwordEncoder, SerializerInterface $serializer, ValidatorInterface $validator) {
+    public function apiRegister(Request $request, UserPasswordEncoderInterface $passwordEncoder, SerializerInterface $serializer, ValidatorInterface $validator, UserRepository $userRepository) {
          $userInterface = new User();
         $jsonRequest = $request->getContent();
         try {
             $user = $serializer->deserialize($jsonRequest, User::class, 'json');
+            $pseudo = $user->getPseudo();
+            $userTest = $userRepository->findBy(["pseudo" => $pseudo]);
+            if($userTest) {
+                return $this->json("This pseudo is already used.", 409, ['Access-Control-Allow-Origin' => '*', "Content-Type" => "application/json"]);
+            }
+            $email = $user->getEmail();
+            $userTest = $userRepository->findBy(["email" => $email]);
+            if($userTest) {
+                return $this->json("This email is already used.", 409, ['Access-Control-Allow-Origin' => '*', "Content-Type" => "application/json"]);
+            }
             $errors = $validator->validate($user);
             if(count($errors) > 0) {
                 return $this->json($errors, 400, ['Access-Control-Allow-Origin' => '*', "Content-Type" => "application/json"]);
