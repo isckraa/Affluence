@@ -91,14 +91,12 @@ class BoutiqueController extends AbstractController
     }
 
     /**
-     * @Route("/boutique/list", name="boutique_list", methods={"GET"})
-     * @param BoutiqueRepository $boutiqueRepository
+     * This function format data to return a list of boutique data.
      * @param SerializerInterface $serializer
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @param array $boutiques
+     * @return array
      */
-    public function list(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer)
-    {
-        $boutiques = $boutiqueRepository->findAll();
+    public function boutiqueListSerializer(SerializerInterface $serializer, array $boutiques) {
         $boutiqueSerialize = [];
         $i = 0;
         foreach($boutiques as $boutique) {
@@ -122,6 +120,19 @@ class BoutiqueController extends AbstractController
             }
             $i++;
         }
+        return $boutiqueSerialize;
+    }
+
+    /**
+     * @Route("/boutique/list", name="boutique_list", methods={"GET"})
+     * @param BoutiqueRepository $boutiqueRepository
+     * @param SerializerInterface $serializer
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function list(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer)
+    {
+        $boutiques = $boutiqueRepository->findAll();
+        $boutiqueSerialize = $this->boutiqueListSerializer($serializer, $boutiques);
         return $this->json($boutiqueSerialize, 200, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
     }
 
@@ -161,46 +172,19 @@ class BoutiqueController extends AbstractController
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      * @Route("/boutique/list_nom", name="boutique_list_nom", methods={"GET"})
      */
-    public function findByNom(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer, Request $request, ValidatorInterface $validator) {
+    public function findByNom(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer, Request $request, ValidatorInterface $validator)
+    {
         $nom = $request->get('nom');
-        // $jsonRequest = $request->getContent();
-        try {
-            /* $boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
-            $errors = $validator->validate($boutique);
-            if(count($errors) > 0) {
-                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
-            }
-            $boutiques = $boutiqueRepository->findByApproximatifNom($boutique->getNom()); */
+        if ($nom) {
             $boutiques = $boutiqueRepository->findByApproximatifNom($nom);
-            $i = 0;
-            $boutiqueSerialize = [];
-            foreach($boutiques as $boutique) {
-                $boutiqueSerialize[$i] = json_decode($serializer->serialize($boutique, 'json', [
-                    AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
-                        return $object->getId();
-                    }
-                ]),true);
-                if(isset($boutiqueSerialize[$i]["user"])) {
-                    $boutiqueSerialize[$i]["user"] = $boutiqueSerialize[$i]["user"]["id"];
-                }
-                if(isset($boutiqueSerialize[$i]["fileAttente"])) {
-                    $fileAttenteData = $boutiqueSerialize[$i]["fileAttente"];
-                    $j = 0;
-                    foreach ($fileAttenteData as $fileAttente) {
-                        $fileAttente = $fileAttente["id"];
-                        $fileAttenteData[$j] = $fileAttente;
-                        $j++;
-                    }
-                    $boutiqueSerialize[$i]["fileAttente"] = $fileAttenteData;
-                }
-                $i++;
-            }
-            return $this->json($boutiqueSerialize,200, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
-        } catch (NotEncodableValueException $e) {
-            return $this->json([
-                'status' => 400,
-                'message' => $e->getMessage()
-            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+            $boutiqueSerialize = $this->boutiqueListSerializer($serializer, $boutiques);
+            return $this->json($boutiqueSerialize, 200, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
+        }
+        else {
+            return $this->json(
+                ["status" => 400, "message"=>"Parameter nom is missing."],
+                400,
+                ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
         }
     }
 
@@ -212,46 +196,19 @@ class BoutiqueController extends AbstractController
      * @Route("/boutique/list_code_postal", name="boutique_list_code_postal", methods={"GET"})
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function findByCodePostal(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer, Request $request, ValidatorInterface $validator) {
+    public function findByCodePostal(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer, Request $request, ValidatorInterface $validator)
+    {
         $codePostal = $request->get('codePostal');
-        // $jsonRequest = $request->getContent();
-        try {
-            /* $boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
-            $errors = $validator->validate($boutique);
-            if(count($errors) > 0) {
-                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
-            }
-            $boutiques = $boutiqueRepository->findByApproximatifCodePostal($boutique->getCodePostal());*/
+        if ($codePostal) {
             $boutiques = $boutiqueRepository->findByApproximatifCodePostal($codePostal);
-            $boutiqueSerialize = [];
-            $i = 0;
-            foreach($boutiques as $boutique) {
-                $boutiqueSerialize[$i] = json_decode($serializer->serialize($boutique, 'json', [
-                    AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
-                        return $object->getId();
-                    }
-                ]),true);
-                if(isset($boutiqueSerialize[$i]["user"])) {
-                    $boutiqueSerialize[$i]["user"] = $boutiqueSerialize[$i]["user"]["id"];
-                }
-                if(isset($boutiqueSerialize[$i]["fileAttente"])) {
-                    $fileAttenteData = $boutiqueSerialize[$i]["fileAttente"];
-                    $j = 0;
-                    foreach ($fileAttenteData as $fileAttente) {
-                        $fileAttente = $fileAttente["id"];
-                        $fileAttenteData[$j] = $fileAttente;
-                        $j++;
-                    }
-                    $boutiqueSerialize[$i]["fileAttente"] = $fileAttenteData;
-                }
-                $i++;
-            }
-            return $this->json($boutiqueSerialize,200, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
-        } catch (NotEncodableValueException $e) {
-            return $this->json([
-                'status' => 400,
-                'message' => $e->getMessage()
-            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+            $boutiqueSerialize = $this->boutiqueListSerializer($serializer, $boutiques);
+            return $this->json($boutiqueSerialize, 200, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
+        }
+        else {
+            return $this->json(
+                ["status" => 400, "message"=>"Parameter codePostal is missing."],
+                400,
+                ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
         }
     }
 
@@ -263,46 +220,19 @@ class BoutiqueController extends AbstractController
      * @Route("/boutique/list_ville", name="boutique_list_ville", methods={"GET"})
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function findByVille(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer, Request $request, ValidatorInterface $validator) {
+    public function findByVille(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer, Request $request, ValidatorInterface $validator)
+    {
         $ville = $request->get('ville');
-        // $jsonRequest = $request->getContent();
-        try {
-            /*$boutique = $serializer->deserialize($jsonRequest, Boutique::class, 'json');
-            $errors = $validator->validate($boutique);
-            if(count($errors) > 0) {
-                return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
-            }
-            $boutiques = $boutiqueRepository->findByApproximatifVille($boutique->getVille());*/
+        if ($ville) {
             $boutiques = $boutiqueRepository->findByApproximatifVille($ville);
-            $boutiqueSerialize = [];
-            $i = 0;
-            foreach($boutiques as $boutique) {
-                $boutiqueSerialize[$i] = json_decode($serializer->serialize($boutique, 'json', [
-                    AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
-                        return $object->getId();
-                    }
-                ]),true);
-                if(isset($boutiqueSerialize[$i]["user"])) {
-                    $boutiqueSerialize[$i]["user"] = $boutiqueSerialize[$i]["user"]["id"];
-                }
-                if(isset($boutiqueSerialize[$i]["fileAttente"])) {
-                    $fileAttenteData = $boutiqueSerialize[$i]["fileAttente"];
-                    $j = 0;
-                    foreach ($fileAttenteData as $fileAttente) {
-                        $fileAttente = $fileAttente["id"];
-                        $fileAttenteData[$j] = $fileAttente;
-                        $j++;
-                    }
-                    $boutiqueSerialize[$i]["fileAttente"] = $fileAttenteData;
-                }
-                $i++;
-            }
-            return $this->json($boutiqueSerialize,200, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
-        } catch (NotEncodableValueException $e) {
-            return $this->json([
-                'status' => 400,
-                'message' => $e->getMessage()
-            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+            $boutiqueSerialize = $this->boutiqueListSerializer($serializer, $boutiques);
+            return $this->json($boutiqueSerialize, 200, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
+        }
+        else {
+            return $this->json(
+                ["status" => 400, "message"=>"Parameter ville is missing."],
+                400,
+                ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
         }
     }
 
