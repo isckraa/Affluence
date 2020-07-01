@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Boutique;
+use App\Repository\BoutiqueRepository;
 use App\Entity\InfoFileAttente;
 use App\Entity\User;
 use App\Repository\FileAttenteRepository;
+use App\Repository\InfoFileAttenteRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -238,4 +240,100 @@ class InfoFileAttenteController extends AbstractController
         ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
     }
 
+    /**
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @Route("/info/pushGeo", name="ushGeo_user", methods={"POST"})
+     */
+    public function pushGeo(UserRepository $userRepository, BoutiqueRepository $boutiqueRepository,Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, InfoFileAttenteRepository $infoFARepository, FileAttenteRepository $fileAttenteRepository){
+        $jsonRequest = $request->getContent();
+        try {
+            $dataDecode = $serializer->decode($jsonRequest, 'json');
+            
+            $latitudeUser = $dataDecode["latitude"];
+            $longitudeUser = $dataDecode["longitude"];
+
+            $boutiques = $boutiqueRepository->findByGPS($longitudeUser, $latitudeUser, 5);
+            
+
+            $newdate = new \DateTime();
+            $user = $userRepository->findOneBy([
+                'id' => $dataDecode["userId"]
+            ]);
+
+            foreach($boutiques as $boutique){
+                foreach($boutique->getFileAttente() as $file){
+                    $infos = $infoFARepository->findByUser($dataDecode["userId"],$file->getId());
+                    if(count($infos) > 0){
+                        var_dump("info file true");
+                        foreach($infos as $infofileAttente){
+                            $infofileAttente->setHeureSortie($newdate);
+                            $em->persist($infofileAttente);
+                        }
+                    }
+                    else{
+                        var_dump("info file false");
+
+                        $newInfoFileAttente = new InfoFileAttente();
+
+                        $newInfoFileAttente->setUser($user);
+                        $newInfoFileAttente->setFileAttente($file);
+                        $newInfoFileAttente->setLatitude($latitudeUser);
+                        $newInfoFileAttente->setLongitude($longitudeUser);
+                        $newInfoFileAttente->setHeureEntree($newdate);
+                        $newInfoFileAttente->setHeureSortie($newdate);
+                        $newInfoFileAttente->setAffluence(1);
+                        $newInfoFileAttente->setDayDate($newdate);
+
+                        $em->persist($newInfoFileAttente);
+                    }
+                    
+                }
+            }
+
+            $em->flush();
+
+            foreach($boutiques as $boutique){
+                foreach($boutique->getFileAttente() as $file){
+                    $this->actualize($infoFARepository,$file,$em);
+                }
+            }
+
+            return $this->json([
+                'status' => 201,
+                'message' => 'Update waiting queue info success'
+            ], 201, ["Access-Control-Allow-Origin" => "*"]);
+        }catch (NotEncodableValueException $e) {
+            return $this->json([
+                'status' => 400,
+                'message' => $e->getMessage()
+            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+        }
+    }
+
+    public function actualize( $infoFARepository, $fileAttente,  $em)
+    {
+        $listInfos = $infoFARepository->findByQueueDate($fileAttente->getId());
+        
+        $avgWait = 0;
+        $count = 0;
+        foreach($listInfos as &$infos){
+            $diff = date_diff($infos->getHeureSortie(),$infos->getHeureEntree());
+
+            $count ++; 
+            $avgWait += $diff->h*60 + $diff->i;
+        }
+
+        if($count>0){
+            $avgWait/=$count;
+            var_dump($avgWait);    
+        }
+
+        $hour = str_pad((string) floor($avgWait/60),2,"0",STR_PAD_LEFT);
+        $minutes = str_pad((string) $avgWait%60,2,"0",STR_PAD_LEFT);
+        $duration = new \DateTime($hour.":".$minutes.":00");
+        $fileAttente->setDuree($duration);
+
+        $em->persist($fileAttente);
+        $em->flush();
+    }
 }

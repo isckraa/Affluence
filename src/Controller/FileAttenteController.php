@@ -158,38 +158,5 @@ class FileAttenteController extends AbstractController
         }
     }
 
-    /**
-     * @Route("/actualize/{id}", name="actualize", methods={"GET"})
-     */
-    public function actualize(Request $request, InfoFileAttenteRepository $infoFARepository, FileAttente $fileAttente, EntityManagerInterface $em): JsonResponse
-    {
-        $listInfos = $infoFARepository->findByQueueDate($fileAttente->getId());
-        
-        $avgWait = 0;
-        $count = 0;
-        foreach($listInfos as &$infos){
-            $diff = date_diff($infos->getHeureSortie(),$infos->getHeureEntree());
-
-            $count ++; 
-            $avgWait += $diff->h*60 + $diff->i;
-        }
-
-        if($count>0){
-            $avgWait/=$count;
-            var_dump($avgWait);    
-        }
-
-        $hour = str_pad((string) floor($avgWait/60),2,"0",STR_PAD_LEFT);
-        $minutes = str_pad((string) $avgWait%60,2,"0",STR_PAD_LEFT);
-        $duration = new \DateTime($hour.":".$minutes.":00");
-        $fileAttente->setDuree($duration);
-
-        $em->persist($fileAttente);
-        $em->flush();
-
-        return $this->json([
-            'status' => 201,
-            'message' => "Actualize success"
-        ], 201, ["Access-Control-Allow-Origin" => "*"]);
-    }
+    
 }

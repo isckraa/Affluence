@@ -48,11 +48,8 @@ class InfoFileAttenteRepository extends ServiceEntityRepository
     }
     */
 
-        /**
+     /**
      * Collect info of waiting queue for a certain boutique and hour.
-     * @param $longitude
-     * @param $latitude
-     * @param int $distance
      * @return InfoFileAttente[]
      */
     public function findByQueueDate($fileId){
@@ -83,5 +80,33 @@ class InfoFileAttenteRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult(); 
         
+    }
+
+    /**
+     * Collect info of waiting queue for a certain boutique, hour and user.
+     * @return InfoFileAttente[]
+     */
+    public function findByUser($userId, $fileId){
+        $today = date("Y-m-d");
+        $hour = date("H:i:s");
+
+        $timestampMinus = strtotime($hour) - 60*60;
+        $hourMinus = date("H:i:s", $timestampMinus);
+
+        $entityManager = $this->getEntityManager();
+
+        $qb = $this->createQueryBuilder('ifa');
+        return $qb->where('ifa.dayDate = :date')
+            ->andWhere('ifa.fileAttente = :fileId')
+            ->andWhere('ifa.user = :userId')
+            ->andWhere('ifa.heure_entree between :hourMinus and :hour')
+            ->setParameter('date', $today)
+            ->setParameter('fileId', $fileId)
+            ->setParameter('userId', $userId)
+            ->setParameter('hourMinus', $hourMinus)
+            ->setParameter('hour', $hour)
+            ->orderBy('ifa.id', 'ASC')
+            ->getQuery()
+            ->getResult(); 
     }
 }
