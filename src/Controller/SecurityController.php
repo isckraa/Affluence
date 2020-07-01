@@ -43,11 +43,18 @@ class SecurityController extends AbstractController
     public function api_login() {
         $user = $this->getUser();
 
-
-        return new JsonResponse([
-            'email' => $user->getEmail(),
-            'roles' => $user->getRoles()
-        ]);
+        if($user) {
+            return new JsonResponse([
+                'email' => $user->getEmail(),
+                'roles' => $user->getRoles()
+            ], 200,
+                ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
+        }
+        else {
+            return new JsonResponse(["message" =>"Invalid user"],
+            415,
+                ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
+        }
 
     }
 
