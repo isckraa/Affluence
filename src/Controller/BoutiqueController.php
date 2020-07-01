@@ -237,6 +237,31 @@ class BoutiqueController extends AbstractController
     }
 
     /**
+     * @param BoutiqueRepository $boutiqueRepository
+     * @param SerializerInterface $serializer
+     * @param Request $request
+     * @param ValidatorInterface $validator
+     * @Route("/boutique/list_gps", name="boutique_list_gps", methods={"GET"})
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function findByGPS(BoutiqueRepository $boutiqueRepository, SerializerInterface $serializer, Request $request, ValidatorInterface $validator)
+    {
+        $longitude = $request->get('longitude');
+        $latitude = $request->get('latitude');
+        if($longitude && $latitude){
+            $boutiques = $boutiqueRepository->findByGPS($longitude, $latitude, 1);
+            $boutiqueSerialize = $this->boutiqueListSerializer($serializer, $boutiques);
+            return $this->json($boutiqueSerialize, 200, ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
+        }
+        else {
+            return $this->json(
+                ["status" => 400, "message"=>"Parameter longitude or latitude is missing."],
+                400,
+                ['Access-Control-Allow-Origin' => '*', 'Content-Type' => 'application/json']);
+        }
+    }
+
+    /**
      * @param Boutique $boutique
      * @param Request $request
      * @param SerializerInterface $serializer

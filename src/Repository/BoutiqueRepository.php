@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Boutique;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use phpDocumentor\Reflection\Types\Integer;
 
 /**
  * @method Boutique|null find($id, $lockMode = null, $lockVersion = null)
@@ -88,5 +89,32 @@ class BoutiqueRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
             ;
+    }
+
+
+    // latBoutique > latPos - 1m && latBoutique < latPos + 1m && longBoutique > longPos - 1m && longBoutique < longPos + 1m
+
+    /**
+     * Collect boutique around a position and by a defined distance.
+     * @param $longitude
+     * @param $latitude
+     * @param int $distance
+     * @return Boutique[]
+     */
+    public function findByGPS($longitude,$latitude, int $distance){
+        $longitudeDistance = $distance * 0.00001282;
+        $latitudeDistance = $distance * 0.00000901;
+        $qb = $this->createQueryBuilder('b');
+        return $qb->where('b.Longitude > :longInf')
+            ->andWhere('b.Longitude < :longSup')
+            ->andWhere('b.Latitude > :latInf')
+            ->andWhere('b.Latitude < :latSup')
+            ->setParameter('longSup', $longitude + $longitudeDistance)
+            ->setParameter('longInf', $longitude - $longitudeDistance)
+            ->setParameter('latSup', $latitude + $latitudeDistance)
+            ->setParameter('latInf', $latitude - $latitudeDistance)
+            ->orderBy('b.id', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }
