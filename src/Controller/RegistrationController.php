@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Repository\UserRepository;
 use App\Security\LogginFormAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -58,11 +59,30 @@ class RegistrationController extends AbstractController
     /**
      * @Route("/user/register", name="api_register", methods={"POST"})
      */
-    public function apiRegister(Request $request, UserPasswordEncoderInterface $passwordEncoder, SerializerInterface $serializer, ValidatorInterface $validator) {
+    public function apiRegister(Request $request, UserPasswordEncoderInterface $passwordEncoder, SerializerInterface $serializer, ValidatorInterface $validator, UserRepository $userRepository) {
          $userInterface = new User();
         $jsonRequest = $request->getContent();
         try {
             $user = $serializer->deserialize($jsonRequest, User::class, 'json');
+            $pseudo = $user->getPseudo();
+            $userTest = $userRepository->findBy(["pseudo" => $pseudo]);
+            if($userTest) {
+                return $this->json("Ce pseudo est déjà utilisé", 409, ['Access-Control-Allow-Origin' => '*', "Content-Type" => "application/json"]);
+            }
+            $email = $user->getEmail();
+            $userTest = $userRepository->findBy(["email" => $email]);
+            if($userTest) {
+                return $this->json("Cet email est déjà utilisé.", 409, ['Access-Control-Allow-Origin' => '*', "Content-Type" => "application/json"]);
+            }
+            $password = $user->getPassword();
+            if(isset($password)) {
+                if (!preg_match('^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-+!*$@%_])([-+!*$@%_\w]{6,})$^', $password)) {
+                    return $this->json("Le mot de passe n'est pas au bon format.", 415, ['Access-Control-Allow-Origin' => '*', "Content-Type" => "application/json"]);
+                }
+            }
+            else {
+                return $this->json("Le mot de passe n'est pas fourni.", 415, ['Access-Control-Allow-Origin' => '*', "Content-Type" => "application/json"]);
+            }
             $errors = $validator->validate($user);
             if(count($errors) > 0) {
                 return $this->json($errors, 400, ['Access-Control-Allow-Origin' => '*', "Content-Type" => "application/json"]);
@@ -79,7 +99,7 @@ class RegistrationController extends AbstractController
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
-            return $this->json($user, 201, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+            return $this->json("Inscription réussi.", 201, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         } catch (NotEncodableValueException $e) {
             return $this->json([
                 'status' => 400,

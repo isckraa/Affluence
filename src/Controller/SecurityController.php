@@ -67,9 +67,9 @@ class SecurityController extends AbstractController
             ], 201, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         } catch (\Exception $e) {
             return $this->json([
-                'status' => 400,
+                'status' => 304,
                 'message' => "Delete user failed. Error : ".$e->getMessage()
-            ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+            ], 304, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
         }
     }
 }
