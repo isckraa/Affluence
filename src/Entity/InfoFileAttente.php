@@ -61,6 +61,11 @@ class InfoFileAttente
      */
     private $longitude;
 
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $dayDate;
+
     public function __construct()
     {
         $this->fileAttentes = new ArrayCollection();
@@ -163,6 +168,18 @@ class InfoFileAttente
     public function setLongitude(?float $longitude): self
     {
         $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    public function getDayDate(): ?\DateTimeInterface
+    {
+        return $this->dayDate;
+    }
+
+    public function setDayDate(?\DateTimeInterface $dayDate): self
+    {
+        $this->dayDate = $dayDate;
 
         return $this;
     }

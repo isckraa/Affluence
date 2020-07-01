@@ -57,6 +57,9 @@ class InfoFileAttenteController extends AbstractController
             }
             $infoFileAttente->setUser($user);
             $infoFileAttente->setFileAttente($fileAttente);
+
+            $infoFileAttente->setDayDate(new \DateTime(date("Y-m-d")));
+            
             $em->persist($infoFileAttente);
             $em->flush();
             $response = json_decode($serializer->serialize($infoFileAttente, 'json', [

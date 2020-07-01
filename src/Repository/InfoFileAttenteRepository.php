@@ -47,4 +47,41 @@ class InfoFileAttenteRepository extends ServiceEntityRepository
         ;
     }
     */
+
+        /**
+     * Collect info of waiting queue for a certain boutique and hour.
+     * @param $longitude
+     * @param $latitude
+     * @param int $distance
+     * @return InfoFileAttente[]
+     */
+    public function findByQueueDate($fileId){
+        $today = date("Y-m-d");
+        $hour = date("H:i:s");
+
+        $timestampMinus = strtotime($hour) - 60*60*2;
+        $hourMinus = date("H:i:s", $timestampMinus);
+
+        $entityManager = $this->getEntityManager();
+
+        // $query = $entityManager->createQuery(
+        //     'SELECT ifa.heure_entree
+        //     FROM App\Entity\InfoFileAttente ifa
+        //     WHERE ifa.heure_entree BETWEEN "15:00:00" AND "16:00:00"'
+        // );
+        // return $query->getResult(); 
+
+        $qb = $this->createQueryBuilder('ifa');
+        return $qb->where('ifa.dayDate = :date')
+            ->andWhere('ifa.fileAttente = :fileId')
+            ->andWhere('ifa.heure_entree between :hourMinus and :hour')
+            ->setParameter('date', $today)
+            ->setParameter('fileId', $fileId)
+            ->setParameter('hourMinus', $hourMinus)
+            ->setParameter('hour', $hour)
+            ->orderBy('ifa.id', 'ASC')
+            ->getQuery()
+            ->getResult(); 
+        
+    }
 }

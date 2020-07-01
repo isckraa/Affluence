@@ -6,6 +6,8 @@ use App\Entity\FileAttente;
 use App\Form\FileAttenteType;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\FileAttenteRepository;
+use App\Entity\InfoFileAttente;
+use App\Repository\InfoFileAttenteRepository;
 use App\Entity\Boutique;
 use App\Repository\BoutiqueRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -157,11 +159,21 @@ class FileAttenteController extends AbstractController
     }
 
     /**
-     * @Route("/actualize", name="actualize", methods={"POST"})
+     * @Route("/actualize/{id}", name="actualize", methods={"GET"})
      */
-    public function actualize(Request $request): JsonResponse
+    public function actualize(Request $request, InfoFileAttenteRepository $infoFARepository, FileAttente $fileAttente): JsonResponse
     {
+        $listInfos = $infoFARepository->findByQueueDate($fileAttente->getId());
         
-        
+        var_dump($listInfos[0]->getHeureEntree());
+
+        foreach($listInfos as &$infos){
+
+        }
+
+        return $this->json([
+            'status' => 201,
+            'message' => "Actualize success"
+        ], 201, ["Access-Control-Allow-Origin" => "*"]);
     }
 }
