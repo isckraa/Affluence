@@ -234,4 +234,5 @@ class InfoFileAttenteController extends AbstractController
             'message' => 'Bad id'
         ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
     }
+
 }

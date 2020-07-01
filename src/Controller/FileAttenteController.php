@@ -161,6 +161,7 @@ class FileAttenteController extends AbstractController
      */
     public function actualize(Request $request): JsonResponse
     {
-
+        
+        
     }
 }
