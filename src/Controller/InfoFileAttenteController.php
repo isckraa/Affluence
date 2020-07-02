@@ -242,7 +242,7 @@ class InfoFileAttenteController extends AbstractController
 
     /**
      * @return \Symfony\Component\HttpFoundation\JsonResponse
-     * @Route("/info/pushGeo", name="ushGeo_user", methods={"POST"})
+     * @Route("api/info/pushGeo", name="ushGeo_user", methods={"POST"})
      */
     public function pushGeo(UserRepository $userRepository, BoutiqueRepository $boutiqueRepository,Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, InfoFileAttenteRepository $infoFARepository, FileAttenteRepository $fileAttenteRepository){
         $jsonRequest = $request->getContent();

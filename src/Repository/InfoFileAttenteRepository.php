@@ -90,7 +90,7 @@ class InfoFileAttenteRepository extends ServiceEntityRepository
         $today = date("Y-m-d");
         $hour = date("H:i:s");
 
-        $timestampMinus = strtotime($hour) - 60*60;
+        $timestampMinus = strtotime($hour) - 60*5;
         $hourMinus = date("H:i:s", $timestampMinus);
 
         $entityManager = $this->getEntityManager();
@@ -99,7 +99,7 @@ class InfoFileAttenteRepository extends ServiceEntityRepository
         return $qb->where('ifa.dayDate = :date')
             ->andWhere('ifa.fileAttente = :fileId')
             ->andWhere('ifa.user = :userId')
-            ->andWhere('ifa.heure_entree between :hourMinus and :hour')
+            ->andWhere('ifa.heure_sortie between :hourMinus and :hour')
             ->setParameter('date', $today)
             ->setParameter('fileId', $fileId)
             ->setParameter('userId', $userId)
