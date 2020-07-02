@@ -252,7 +252,7 @@ class InfoFileAttenteController extends AbstractController
             $latitudeUser = $dataDecode["latitude"];
             $longitudeUser = $dataDecode["longitude"];
 
-            $boutiques = $boutiqueRepository->findByGPS($longitudeUser, $latitudeUser, 5);
+            $boutiques = $boutiqueRepository->findByGPS($longitudeUser, $latitudeUser, 10);
             
 
             $newdate = new \DateTime();
