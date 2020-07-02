@@ -5,7 +5,7 @@ That's the API project who manage the database and send data to the application.
 
 ## Basic command
 
-Download project : `https://github.com/sckraa/Affluence.git`
+Download project : `git clone https://github.com/sckraa/Affluence.git`
 
 Place it in your repertory `www/` of your Apache stack.
 
