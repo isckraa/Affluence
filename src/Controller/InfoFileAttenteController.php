@@ -256,6 +256,7 @@ class InfoFileAttenteController extends AbstractController
             
 
             $newdate = new \DateTime();
+            $newstartdate = new \DateTime(date("H:i:s",strtotime("- 3 minutes")));
             $user = $userRepository->findOneBy([
                 'id' => $dataDecode["userId"]
             ]);
@@ -279,7 +280,7 @@ class InfoFileAttenteController extends AbstractController
                         $newInfoFileAttente->setFileAttente($file);
                         $newInfoFileAttente->setLatitude($latitudeUser);
                         $newInfoFileAttente->setLongitude($longitudeUser);
-                        $newInfoFileAttente->setHeureEntree($newdate);
+                        $newInfoFileAttente->setHeureEntree($newstartdate);
                         $newInfoFileAttente->setHeureSortie($newdate);
                         $newInfoFileAttente->setAffluence(1);
                         $newInfoFileAttente->setDayDate($newdate);
