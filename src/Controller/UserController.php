@@ -14,7 +14,6 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 class UserController extends AbstractController
 {
@@ -144,7 +143,7 @@ class UserController extends AbstractController
                 $user->setPseudo($newData->getPseudo() ?? $user->getPseudo());
                 $user->setEmail($newData->getEmail() ?? $user->getEmail());
                 $user->setPoints($newData->getPoints() ?? $user->getPoints());
-                if (!empty($newData->getRoles())) {
+                if (sizeof($newData->getRoles())>1) {
                     $user->setRoles($newData->getRoles());
                 }
                 if ($newData->getPassword()) {
@@ -200,5 +199,19 @@ class UserController extends AbstractController
             }
         }
         return $this->json($response, 200, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+    }
+
+    /**
+     * @param Request $request
+     * @param SerializerInterface $serializer
+     * @param ValidatorInterface $validator
+     * @param EntityManagerInterface $em
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @Route("/api/user/update", name="api_user_update", methods={"POST"})
+     */
+    public function updateSettings(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, UserPasswordEncoderInterface $passwordEncoder) {
+        $user = $this->getUser();
+        return $this->update($user, $request, $serializer, $validator, $em, $passwordEncoder);
     }
 }
