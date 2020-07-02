@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Boutique;
+use App\Entity\FileAttente;
 use App\Repository\BoutiqueRepository;
 use App\Repository\FileAttenteRepository;
 use App\Repository\UserRepository;
@@ -36,6 +37,7 @@ class BoutiqueController extends AbstractController
      * @param ValidatorInterface $validator
      * @param UserRepository $userRepository
      * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @throws \Exception
      */
     public function create(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator, UserRepository $userRepository) {
         $jsonRequest = $request->getContent();
@@ -51,6 +53,11 @@ class BoutiqueController extends AbstractController
                 return $this->json($errors, 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
             }
             $boutique->setUser($user);
+            $fileAttente = new FileAttente();
+            $fileAttente->setType("Principal");
+            $fileAttente->setDuree(new \DateTime("00:00"));
+            $boutique->addFileAttente($fileAttente);
+            $em->persist($fileAttente);
             $em->persist($boutique);
             $em->flush();
             $response = json_decode($serializer->serialize($boutique, 'json', [
