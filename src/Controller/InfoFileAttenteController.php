@@ -242,7 +242,7 @@ class InfoFileAttenteController extends AbstractController
 
     /**
      * @return \Symfony\Component\HttpFoundation\JsonResponse
-     * @Route("api/info/pushGeo", name="ushGeo_user", methods={"POST"})
+     * @Route("/api/info/pushGeo", name="ushGeo_user", methods={"POST"})
      */
     public function pushGeo(UserRepository $userRepository, BoutiqueRepository $boutiqueRepository,Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, InfoFileAttenteRepository $infoFARepository, FileAttenteRepository $fileAttenteRepository){
         $jsonRequest = $request->getContent();
@@ -253,26 +253,29 @@ class InfoFileAttenteController extends AbstractController
             $longitudeUser = $dataDecode["longitude"];
 
             $boutiques = $boutiqueRepository->findByGPS($longitudeUser, $latitudeUser, 10);
-            
 
             $newdate = new \DateTime();
             $newstartdate = new \DateTime(date("H:i:s",strtotime("- 3 minutes")));
-            $user = $userRepository->findOneBy([
-                'id' => $dataDecode["userId"]
-            ]);
+            
+            if(isset($dataDecode["userId"])){
+                $user = $userRepository->findOneBy([
+                    'id' => $dataDecode["userId"]
+                ]);
+            }
+            else {
+                $user = $this->getUser();
+            }
 
             foreach($boutiques as $boutique){
                 foreach($boutique->getFileAttente() as $file){
-                    $infos = $infoFARepository->findByUser($dataDecode["userId"],$file->getId());
+                    $infos = $infoFARepository->findByUser($user->getId(),$file->getId());
                     if(count($infos) > 0){
-                        var_dump("info file true");
                         foreach($infos as $infofileAttente){
                             $infofileAttente->setHeureSortie($newdate);
                             $em->persist($infofileAttente);
                         }
                     }
                     else{
-                        var_dump("info file false");
 
                         $newInfoFileAttente = new InfoFileAttente();
 
