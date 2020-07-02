@@ -183,10 +183,12 @@ class UserController extends AbstractController
             }
         ]),true);
         $response["user"] = $response["user"]["id"];
-        $i = 0;
-        foreach($response["fileAttente"] as $filleAttente) {
-            $response["fileAttente"][$i] = $response["fileAttente"][$i]["id"];
-            $i++;
+        if(isset($response["fileAttente"])) {
+            $i = 0;
+            foreach ($response["fileAttente"] as $filleAttente) {
+                $response["fileAttente"][$i] = $response["fileAttente"][$i]["id"];
+                $i++;
+            }
         }
         return $this->json($response, 200, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
     }
