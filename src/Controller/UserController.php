@@ -5,10 +5,12 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -162,5 +164,30 @@ class UserController extends AbstractController
             'status' => 400,
             'message' => 'Bad id'
         ], 400, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
+    }
+
+
+    /**
+     * Check if user is has ROLE_COMMERCANT and return list of his boutiques.
+     * @Route("/api/commercant/verification", name="commercant_verification", methods={"POST"})
+     * @IsGranted("ROLE_COMMERCANT")
+     * @param SerializerInterface $serializer
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function isCommercant(SerializerInterface $serializer) {
+        $user = $this->getUser();
+        $boutique = $user->getBoutique();
+        $response = json_decode($serializer->serialize($boutique, 'json', [
+            AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
+                return $object->getId();
+            }
+        ]),true);
+        $response["user"] = $response["user"]["id"];
+        $i = 0;
+        foreach($response["fileAttente"] as $filleAttente) {
+            $response["fileAttente"][$i] = $response["fileAttente"][$i]["id"];
+            $i++;
+        }
+        return $this->json($response, 200, ["Access-Control-Allow-Origin" => "*", "Content-Type" => "application/json"]);
     }
 }
